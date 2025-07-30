@@ -10,9 +10,10 @@ import (
 
 type ServerConfig struct {
 	LogLevel string
+	Port     int
 }
 
-func ParseServerConfig() (ServerConfig, error) {
+func parseServerConfig() (ServerConfig, error) {
 	if err := godotenv.Load(".env"); err != nil {
 		if os.IsNotExist(err) {
 			fmt.Printf(".env file doesn't exist, skipping")
@@ -23,7 +24,11 @@ func ParseServerConfig() (ServerConfig, error) {
 
 	viper.AutomaticEnv()
 
+	viper.SetDefault("LOG_LEVEL", "debug")
+	viper.SetDefault("PORT", 3000)
+
 	return ServerConfig{
 		LogLevel: viper.GetString("LOG_LEVEL"),
+		Port:     viper.GetInt("PORT"),
 	}, nil
 }
