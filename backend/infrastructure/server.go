@@ -12,6 +12,7 @@ import (
 	"github.com/ProRocketeers/url-shortener/api"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func createRouter() *chi.Mux {
@@ -38,6 +39,11 @@ func createRouter() *chi.Mux {
 		middleware.Timeout(60*time.Second),
 	)
 
+	r.Get("/swagger*", httpSwagger.WrapHandler)
+	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
+	})
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello"))
@@ -49,8 +55,8 @@ func createRouter() *chi.Mux {
 	return r
 }
 
-func RunServerGracefully() error {
-	config, err := parseServerConfig()
+func RunServerGracefully(version string) error {
+	config, err := parseServerConfig(version)
 	if err != nil {
 		return fmt.Errorf("parsing server config: %v", err)
 	}
@@ -70,7 +76,7 @@ func RunServerGracefully() error {
 	// Start the server in goroutine to not block main thread
 	go func() {
 		defer close(serverError)
-		fmt.Println("Starting server on port ", config.Port)
+		fmt.Printf("Starting server (%s) on port %d", config.Version, config.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// encountered an error, gracefully shutdown
 			serverError <- err

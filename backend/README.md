@@ -3,3 +3,6 @@
 Run with `air`
 
 TODO: makefile?
+
+
+`go install github.com/swaggo/swag/cmd/swag@latest`
