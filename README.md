@@ -12,4 +12,7 @@ The main motivation is to learn something new during the development process whi
 
 ## Project Structure
 
-The monorepo contains three main components:
+The monorepo contains two main components:
+- backend service - written in Go
+- frontend - web interface in React + Next.js
+
