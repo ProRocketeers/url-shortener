@@ -12,6 +12,7 @@ import (
 	"github.com/ProRocketeers/url-shortener/api"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -38,6 +39,8 @@ func createRouter() *chi.Mux {
 		middleware.RedirectSlashes,
 		middleware.Timeout(60*time.Second),
 	)
+
+	r.Handle("/metrics", promhttp.Handler())
 
 	r.Get("/swagger*", httpSwagger.WrapHandler)
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
