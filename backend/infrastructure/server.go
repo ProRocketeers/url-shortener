@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -30,8 +31,9 @@ func createRouter() *chi.Mux {
 		// - route, HTTP version
 		// - remote address
 		// - status code, response size, response time
-		// TODO: JSON logger for non-development runtime
-		middleware.Logger,
+		middleware.RequestLogger(&ZerologChiFormatter{
+			Logger: log.Logger,
+		}),
 		// error handling - recovers from panics, logs it and returns 500
 		middleware.Recoverer,
 		middleware.Heartbeat("/health"),
@@ -58,12 +60,7 @@ func createRouter() *chi.Mux {
 	return r
 }
 
-func RunServerGracefully(version string) error {
-	config, err := parseServerConfig(version)
-	if err != nil {
-		return fmt.Errorf("parsing server config: %v", err)
-	}
-
+func RunServerGracefully(config ServerConfig) error {
 	router := createRouter()
 
 	server := &http.Server{
@@ -79,7 +76,7 @@ func RunServerGracefully(version string) error {
 	// Start the server in goroutine to not block main thread
 	go func() {
 		defer close(serverError)
-		fmt.Printf("Starting server (%s) on port %d", config.Version, config.Port)
+		log.Info().Str("version", config.Version).Msgf("Starting server on port %d", config.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// encountered an error, gracefully shutdown
 			serverError <- err
@@ -89,9 +86,9 @@ func RunServerGracefully(version string) error {
 	// Wait for either context cancellation (interrupt), or a server error
 	select {
 	case err := <-serverError:
-		fmt.Printf("Server error: %v", err)
+		log.Error().Err(err).Msg("Server error")
 	case <-ctx.Done():
-		fmt.Println("Shutting down gracefully...")
+		log.Info().Msg("Shutting down gracefully...")
 	}
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -100,6 +97,6 @@ func RunServerGracefully(version string) error {
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		return fmt.Errorf("graceful shutdown failed: %v", err)
 	}
-	fmt.Println("Server stopped")
+	log.Info().Msg("Server stopped")
 	return nil
 }
