@@ -76,7 +76,11 @@ func RunServerGracefully(config ServerConfig) error {
 	// Start the server in goroutine to not block main thread
 	go func() {
 		defer close(serverError)
-		log.Info().Str("version", config.Version).Msgf("Starting server on port %d", config.Port)
+		log.Info().
+			Str("version", config.Metadata.Version).
+			Str("commit", config.Metadata.CommitHash).
+			Str("buildTime", config.Metadata.BuildTime).
+			Msgf("Starting server on port %d", config.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// encountered an error, gracefully shutdown
 			serverError <- err

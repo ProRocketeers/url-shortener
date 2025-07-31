@@ -1,0 +1,7 @@
+bin/
+.air.toml
+.dockerignore
+.env
+.env.example
+.gitignore
+*.md

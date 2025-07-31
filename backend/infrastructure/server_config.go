@@ -25,13 +25,18 @@ var environmentMap = map[string]Environment{
 	"production":  ProductionEnvironment,
 }
 
+type ServerConfigMeta struct {
+	Version    string
+	CommitHash string
+	BuildTime  string
+}
 type ServerConfig struct {
-	Version     string
+	Metadata    ServerConfigMeta
 	Environment Environment
 	Port        int
 }
 
-func ParseServerConfig(version string) (ServerConfig, error) {
+func ParseServerConfig(version, commitHash, buildTime string) (ServerConfig, error) {
 	if err := godotenv.Load(".env"); err != nil {
 		if os.IsNotExist(err) {
 			log.Info().Msg(".env file doesn't exist, skipping")
@@ -61,7 +66,11 @@ func ParseServerConfig(version string) (ServerConfig, error) {
 	}
 
 	cfg := ServerConfig{
-		Version:     version,
+		Metadata: ServerConfigMeta{
+			version,
+			commitHash,
+			buildTime,
+		},
 		Port:        viper.GetInt("PORT"),
 		Environment: environment,
 	}

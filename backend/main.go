@@ -7,13 +7,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var Version = "dev"
+var (
+	Version    = "dev"
+	CommitHash = "local"
+	BuildTime  = "now"
+)
 
 func main() {
 	// logger setup is kinda weird, before we parse the config, we don't know logger level, so let's assume it's JSON output, level info
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	config, err := infrastructure.ParseServerConfig(Version)
+	config, err := infrastructure.ParseServerConfig(Version, CommitHash, BuildTime)
 	if err != nil {
 		// Fatal already calls `os.Exit(1)`
 		log.Fatal().Err(err).Msg("error while parsing server config")
