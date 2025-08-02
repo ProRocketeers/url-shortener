@@ -28,4 +28,12 @@ To regenerate docs from Swagger annotations/comments, run
 make gen-swagger
 ```
 
-### Releasing
+# TODO:
+`curl -sSf https://atlasgo.sh | sh`
+
+`atlas schema inspect --env local --url "env://src"`
+
+```bash
+export ATLAS_DATABASE_URL="postgresql://<user>:<password>@<hostname>:<port>/<db>?sslmode=disable&timezone=UTC"
+atlas migrate apply --env runtime
+```

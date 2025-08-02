@@ -10,14 +10,41 @@ import (
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/api"
+	"github.com/ProRocketeers/url-shortener/domain"
+	"github.com/ProRocketeers/url-shortener/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"gorm.io/gorm"
 )
 
-func createRouter() *chi.Mux {
+type dependencies struct {
+	db                  *gorm.DB
+	shortLinkRepository *storage.ShortLinkRepository
+	shortLinkService    *domain.ShortLinkService
+	urlHandler          *api.ApiHandler
+}
+
+func createDependencies(config Config) (dependencies, error) {
+	db, err := ConnectToDatabase(config)
+	if err != nil {
+		return dependencies{}, fmt.Errorf("could not connect to database: %v", err)
+	}
+	shortLinkRepository := &storage.ShortLinkRepository{Repository: storage.Repository{
+		DB: db,
+	}}
+	shortLinkService := &domain.ShortLinkService{
+		Repository: shortLinkRepository,
+		BaseUrl:    config.Domain.BaseUrl,
+	}
+	urlHandler := api.NewApiHandler(shortLinkService)
+
+	return dependencies{db, shortLinkRepository, shortLinkService, urlHandler}, nil
+}
+
+func createRouter(dependencies *dependencies) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(
@@ -54,14 +81,19 @@ func createRouter() *chi.Mux {
 		w.Write([]byte("hello"))
 	})
 
-	r.Post("/shorten", api.ShortenUrl)
-	r.Get("/{slug:[a-zA-Z0-9]+}", api.RedirectSlug)
+	r.Post("/shorten", dependencies.urlHandler.ShortenUrl)
+	r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.urlHandler.RedirectSlug)
 
 	return r
 }
 
-func RunServerGracefully(config ServerConfig) error {
-	router := createRouter()
+func RunServerGracefully(config Config) error {
+	dependencies, err := createDependencies(config)
+	if err != nil {
+		return fmt.Errorf("could not create server dependencies: %v", err)
+	}
+
+	router := createRouter(&dependencies)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
@@ -81,6 +113,15 @@ func RunServerGracefully(config ServerConfig) error {
 			Str("commit", config.Metadata.CommitHash).
 			Str("buildTime", config.Metadata.BuildTime).
 			Msgf("Starting server on port %d", config.Port)
+
+		cleanupTask := domain.CleanupTask{
+			Context:  ctx,
+			DB:       dependencies.db,
+			Interval: config.Domain.ExpiredLinkCleanupInterval,
+		}
+		log.Info().Msgf("Starting background job - cleaning up expired links - every %v", cleanupTask.Interval.String())
+		cleanupTask.Run()
+
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// encountered an error, gracefully shutdown
 			serverError <- err

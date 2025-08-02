@@ -2,12 +2,13 @@ package model
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type ShortLink struct {
-	gorm.Model
+	// original `gorm.Model`, but without `DeletedAt` which automatically soft deletes
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
 	OriginalURL string `gorm:"not null"`
 	Slug        string `gorm:"not null;unique"`

@@ -9,10 +9,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+      TZ: UTC
     ports:
       - "5432:5432"
     volumes:
       - postgresql_data:/var/lib/postgresql/data
+      - ./init_local_db.sql:/docker-entrypoint-initdb.d/init_local_db.sql
 
 volumes:
   postgresql_data:

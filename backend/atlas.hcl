@@ -14,8 +14,8 @@ env "local" {
   // this references the source of the SQL schema. Why does Atlas use `url` property for it is beyond my fuckin imagination
   src = data.external_schema.gorm.url
   // local dev DB that's used for creating migrations - see `docker-compose.yaml`
-  dev = "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
-  url = "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+  dev = "postgresql://postgres:postgres@localhost:5432/dev?sslmode=disable&timezone=UTC"
+  url = "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable&timezone=UTC"
 
   migration {
     dir = "file://migrations"
