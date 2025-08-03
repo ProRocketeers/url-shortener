@@ -4,7 +4,7 @@ This is a backend service for the URL shortener project. It provides a small RES
 ## How to run
 1. First, install `Go` - you need at least version `1.24.5`, verify with `go version`
 
-2. Then install Go packages:
+2. Then install dependencies:
     - `swaggo` - for generating API docs
       ```bash
       go install github.com/swaggo/swag/cmd/swag@latest
@@ -15,9 +15,22 @@ This is a backend service for the URL shortener project. It provides a small RES
       go install github.com/air-verse/air@latest
       air -v
       ```
+    - `atlas` - for handling database migrations
+      ```bash
+      curl -sSf https://atlasgo.sh | sh
+      go get ariga.io/atlas-provider-gorm
+      ```
 
 3. Copy the `.env.example` as `.env` and edit as necessary
-4. Start the server with hot-reloading
+    ```bash
+    cp .env.example .env
+    ```
+4. Create and migrate the database
+    ```bash
+    docker compose up -d
+    make migrate-dev
+    ```
+5. Start the server with hot-reloading
     ```bash
     make run
     ```
@@ -28,12 +41,13 @@ To regenerate docs from Swagger annotations/comments, run
 make gen-swagger
 ```
 
-# TODO:
-`curl -sSf https://atlasgo.sh | sh`
-
-`atlas schema inspect --env local --url "env://src"`
-
+### Migrations
+To create a new migration after updating the models, run
 ```bash
-export ATLAS_DATABASE_URL="postgresql://<user>:<password>@<hostname>:<port>/<db>?sslmode=disable&timezone=UTC"
-atlas migrate apply --env runtime
+make create-migration NAME=migration_name
+```
+
+And then apply to your local DB 
+```bash
+make migrate-dev
 ```
