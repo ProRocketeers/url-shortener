@@ -20,11 +20,7 @@ func sendJsonBody[T any](w http.ResponseWriter, data T) {
 }
 
 func sendJsonError(w http.ResponseWriter, message string, status int) {
-	type res struct {
-		Error string `json:"error"`
-	}
-
-	data := res{
+	data := genericErrorResponse{
 		Error: message,
 	}
 

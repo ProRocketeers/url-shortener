@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/api"
+	"github.com/ProRocketeers/url-shortener/docs"
 	"github.com/ProRocketeers/url-shortener/domain"
 	"github.com/ProRocketeers/url-shortener/storage"
 	"github.com/go-chi/chi/v5"
@@ -17,6 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"github.com/swaggo/swag"
 	"gorm.io/gorm"
 )
 
@@ -44,7 +46,7 @@ func createDependencies(config Config) (dependencies, error) {
 	return dependencies{db, shortLinkRepository, shortLinkService, urlHandler}, nil
 }
 
-func createRouter(dependencies *dependencies) *chi.Mux {
+func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(
@@ -71,6 +73,19 @@ func createRouter(dependencies *dependencies) *chi.Mux {
 
 	r.Handle("/metrics", promhttp.Handler())
 
+	docs.SetupSwaggerParams(swag.Spec{
+		Title:    "URL Shortener API",
+		Version:  config.Metadata.Version,
+		Host:     config.Domain.BaseUrl,
+		BasePath: "/",
+		Schemes: func() []string {
+			if config.Environment == DevelopmentEnvironment {
+				return []string{"http", "https"}
+			}
+			return []string{"https"}
+		}(),
+	})
+
 	r.Get("/swagger*", httpSwagger.WrapHandler)
 	r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
@@ -93,7 +108,7 @@ func RunServerGracefully(config Config) error {
 		return fmt.Errorf("could not create server dependencies: %v", err)
 	}
 
-	router := createRouter(&dependencies)
+	router := createRouter(&dependencies, config)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),

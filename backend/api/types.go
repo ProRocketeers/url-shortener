@@ -2,7 +2,6 @@ package api
 
 import "time"
 
-// TODO: Swagger annotations
 type shortenUrlRequest struct {
 	OriginalURL string  `json:"originalUrl" validate:"required,http_url"`
 	Slug        *string `json:"slug"`
@@ -12,4 +11,8 @@ type shortenUrlRequest struct {
 
 type shortenUrlResponse struct {
 	ShortURL string `json:"shortUrl"`
+}
+
+type genericErrorResponse struct {
+	Error string `json:"error"`
 }

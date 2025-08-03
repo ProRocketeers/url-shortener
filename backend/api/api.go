@@ -21,6 +21,17 @@ func NewApiHandler(service *domain.ShortLinkService) *ApiHandler {
 	return &ApiHandler{service, validate}
 }
 
+// ShortenUrl godoc
+//
+//	@Summary		Shorten an URL
+//	@Description	Returns a shortened link for the given URL
+//	@Accept			json
+//	@Produce		json
+//	@Param			body		body		shortenUrlRequest	true	"Request body"
+//	@Success		200			{object}	shortenUrlResponse
+//	@Failure		400			{object}	genericErrorResponse	"slug already used"
+//	@Failure		500			{object}	genericErrorResponse
+//	@Router			/shorten	[post]
 func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	req, err := parseJsonBody[shortenUrlRequest](r)
 	if err != nil {
@@ -61,6 +72,16 @@ func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	sendJsonBody(w, res)
 }
 
+// RedirectSlug godoc
+//
+//	@Summary		Redirect from short link
+//	@Description	Redirects the user to the original URL in the link
+//	@Param			slug	path	string	true	"Slug"
+//	@Success		307		"Temporary redirect to URL"
+//	@Failure		404		{object}	genericErrorResponse	"link not found"
+//	@Failure		400		{object}	genericErrorResponse	"link expired"
+//	@Failure		500		{object}	genericErrorResponse	"internal error"
+//	@Router			/{slug} [get]
 func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug)
@@ -71,7 +92,7 @@ func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 			case domain.ErrorCodeLinkNotFound:
 				sendJsonError(w, "link not found", http.StatusNotFound)
 			case domain.ErrorCodeLinkGetOther:
-				sendJsonError(w, "internal error", http.StatusBadRequest)
+				sendJsonError(w, "internal error", http.StatusInternalServerError)
 			case domain.ErrorCodeLinkExpired:
 				sendJsonError(w, "link expired", http.StatusBadRequest)
 			default:

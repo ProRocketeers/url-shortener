@@ -18,6 +18,7 @@ require (
 
 require (
 	ariga.io/atlas-go-sdk v0.7.2 // indirect
+	dario.cat/mergo v1.0.2 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

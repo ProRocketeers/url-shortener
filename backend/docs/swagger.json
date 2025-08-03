@@ -3,5 +3,123 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/shorten": {
+            "post": {
+                "description": "Returns a shortened link for the given URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Shorten an URL",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.shortenUrlRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.shortenUrlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "slug already used",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{slug}": {
+            "get": {
+                "description": "Redirects the user to the original URL in the link",
+                "summary": "Redirect from short link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "307": {
+                        "description": "Temporary redirect to URL"
+                    },
+                    "400": {
+                        "description": "link expired",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.genericErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.shortenUrlRequest": {
+            "type": "object",
+            "required": [
+                "originalUrl"
+            ],
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.shortenUrlResponse": {
+            "type": "object",
+            "properties": {
+                "shortUrl": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }
