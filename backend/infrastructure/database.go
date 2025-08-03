@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"fmt"
 
+	"github.com/rs/zerolog/log"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,5 +17,7 @@ func ConnectToDatabase(config Config) (*gorm.DB, error) {
 		config.Database.Database,
 		config.Database.Port,
 	)
-	return gorm.Open(postgres.Open(connectionString), &gorm.Config{})
+	return gorm.Open(postgres.Open(connectionString), &gorm.Config{
+		Logger: NewZerologGormLogger(log.Logger, config.Database.LogLevel, config.Database.SlowQueryThreshold),
+	})
 }

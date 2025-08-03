@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	gormlogger "gorm.io/gorm/logger"
 )
 
 type environment string
@@ -20,9 +21,16 @@ const (
 )
 
 var environmentMap = map[string]environment{
-	"development": DevelopmentEnvironment,
-	"test":        TestEnvironment,
-	"production":  ProductionEnvironment,
+	string(DevelopmentEnvironment): DevelopmentEnvironment,
+	string(TestEnvironment):        TestEnvironment,
+	string(ProductionEnvironment):  ProductionEnvironment,
+}
+
+var databaseLogLevelMap = map[string]gormlogger.LogLevel{
+	"silent": gormlogger.Silent,
+	"error":  gormlogger.Error,
+	"warn":   gormlogger.Warn,
+	"info":   gormlogger.Info,
 }
 
 type serverConfigMeta struct {
@@ -32,11 +40,13 @@ type serverConfigMeta struct {
 }
 
 type databaseConfig struct {
-	Host     string
-	User     string
-	Password string
-	Database string
-	Port     int
+	Host               string
+	User               string
+	Password           string
+	Database           string
+	Port               int
+	LogLevel           gormlogger.LogLevel
+	SlowQueryThreshold time.Duration
 }
 
 type domainConfig struct {
@@ -69,19 +79,12 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 		}
 	}
 
+	// configures Viper to automatically try to fetch keys from env vars
 	viper.AutomaticEnv()
 
-	viper.SetDefault("LOG_LEVEL", "info")
-	viper.SetDefault("PORT", 3000)
+	setEnvDefaults()
 
-	levelStr := viper.GetString("LOG_LEVEL")
-	logLevel, err := zerolog.ParseLevel(levelStr)
-	if err != nil {
-		log.Warn().Str("level", levelStr).Msg("invalid logger level, using default level 'info'")
-		logLevel = zerolog.InfoLevel
-	}
-
-	zerolog.SetGlobalLevel(logLevel)
+	zerolog.SetGlobalLevel(parseLogLevel())
 
 	environmentStr := viper.GetString("ENVIRONMENT")
 	environment, ok := environmentMap[environmentStr]
@@ -98,11 +101,13 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 		Port:        viper.GetInt("PORT"),
 		Environment: environment,
 		Database: databaseConfig{
-			Host:     viper.GetString("DB_HOST"),
-			User:     viper.GetString("DB_USER"),
-			Password: viper.GetString("DB_PASSWORD"),
-			Database: viper.GetString("DB_DATABASE"),
-			Port:     viper.GetInt("DB_PORT"),
+			Host:               viper.GetString("DB_HOST"),
+			User:               viper.GetString("DB_USER"),
+			Password:           viper.GetString("DB_PASSWORD"),
+			Database:           viper.GetString("DB_DATABASE"),
+			Port:               viper.GetInt("DB_PORT"),
+			LogLevel:           parseDbLogLevel(),
+			SlowQueryThreshold: viper.GetDuration("DB_SLOW_QUERY_THRESHOLD"),
 		},
 		Domain: domainConfig{
 			BaseUrl:                    viper.GetString("BASE_URL"),
@@ -119,4 +124,31 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func setEnvDefaults() {
+	viper.SetDefault("LOG_LEVEL", "info")
+	viper.SetDefault("PORT", 3000)
+	viper.SetDefault("DB_LOG_LEVEL", "info")
+	viper.SetDefault("DB_SLOW_QUERY_THRESHOLD", "250ms")
+}
+
+func parseLogLevel() zerolog.Level {
+	levelStr := viper.GetString("LOG_LEVEL")
+	logLevel, err := zerolog.ParseLevel(levelStr)
+	if err != nil {
+		log.Warn().Str("level", levelStr).Msg("invalid logger level, using default level 'info'")
+		logLevel = zerolog.InfoLevel
+	}
+	return logLevel
+}
+
+func parseDbLogLevel() gormlogger.LogLevel {
+	dbLogLevelStr := viper.GetString("DB_LOG_LEVEL")
+	dbLogLevel, ok := databaseLogLevelMap[dbLogLevelStr]
+	if !ok {
+		log.Warn().Str("level", dbLogLevelStr).Msg("invalid database logger level, using default level 'info'")
+		dbLogLevel = gormlogger.Info
+	}
+	return dbLogLevel
 }
