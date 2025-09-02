@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/ProRocketeers/url-shortener/docs"
 	"github.com/ProRocketeers/url-shortener/infrastructure"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,8 +13,8 @@ var (
 )
 
 func main() {
-	// logger setup is kinda weird, before we parse the config, we don't know logger level, so let's assume it's JSON output, level info
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	// logger setup is kinda weird, before we parse the config, we don't know logger level nor output type, so let's assume it's JSON output, level info
+	infrastructure.InitialLoggerConfig()
 
 	config, err := infrastructure.ParseServerConfig(Version, CommitHash, BuildTime)
 	if err != nil {

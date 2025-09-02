@@ -35,7 +35,7 @@ func (e *ZeroLogEntry) Write(status, bytes int, header http.Header, elapsed time
 	event := e.Logger.Info().
 		Int("status", status).
 		Int("bytes", bytes).
-		Dur("duration", elapsed)
+		Dur("durationMs", elapsed)
 
 	if extra != nil {
 		event = event.Interface("extra", extra)
