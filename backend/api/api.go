@@ -11,14 +11,15 @@ import (
 )
 
 type ApiHandler struct {
-	ShortLinkService *domain.ShortLinkService
+	ShortLinkService   *domain.ShortLinkService
+	RequestInfoService *domain.RequestInfoService
 
 	validate *validator.Validate
 }
 
-func NewApiHandler(service *domain.ShortLinkService) *ApiHandler {
+func NewApiHandler(shortLinkService *domain.ShortLinkService, requestInfoService *domain.RequestInfoService) *ApiHandler {
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	return &ApiHandler{service, validate}
+	return &ApiHandler{shortLinkService, requestInfoService, validate}
 }
 
 // ShortenUrl godoc
@@ -33,6 +34,10 @@ func NewApiHandler(service *domain.ShortLinkService) *ApiHandler {
 //	@Failure		500			{object}	genericErrorResponse
 //	@Router			/shorten	[post]
 func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))
+	}()
+
 	req, err := parseJsonBody[shortenUrlRequest](r)
 	if err != nil {
 		sendJsonError(w, "invalid JSON", http.StatusBadRequest)
@@ -79,10 +84,14 @@ func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 //	@Param			slug	path	string	true	"Slug"
 //	@Success		307		"Temporary redirect to URL"
 //	@Failure		404		{object}	genericErrorResponse	"link not found"
-//	@Failure		400		{object}	genericErrorResponse	"link expired"
+//	@Failure		404		{object}	genericErrorResponse	"link expired"
 //	@Failure		500		{object}	genericErrorResponse	"internal error"
 //	@Router			/{slug} [get]
 func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))
+	}()
+
 	slug := chi.URLParam(r, "slug")
 	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug)
 	if err != nil {
@@ -94,7 +103,7 @@ func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 			case domain.ErrorCodeLinkGetOther:
 				sendJsonError(w, "internal error", http.StatusInternalServerError)
 			case domain.ErrorCodeLinkExpired:
-				sendJsonError(w, "link expired", http.StatusBadRequest)
+				sendJsonError(w, "link expired", http.StatusNotFound)
 			default:
 				sendJsonError(w, "internal error", http.StatusInternalServerError)
 			}
