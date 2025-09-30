@@ -22,3 +22,13 @@ func (r *ShortLinkRepository) Create(ctx context.Context, link *model.ShortLink)
 func (r *ShortLinkRepository) FindBySlug(ctx context.Context, slug string) (model.ShortLink, error) {
 	return gorm.G[model.ShortLink](r.DB).Where("slug = ?", slug).First(ctx)
 }
+
+// ------------------------
+
+type RequestInfoRepository struct {
+	Repository
+}
+
+func (r *RequestInfoRepository) Create(ctx context.Context, info *model.RequestInfo) error {
+	return gorm.G[model.RequestInfo](r.DB).Create(ctx, info)
+}

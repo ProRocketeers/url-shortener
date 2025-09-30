@@ -5,6 +5,10 @@ This is a backend service for the URL shortener project. It provides a small RES
 1. First, install `Go` - you need at least version `1.24.5`, verify with `go version`
 
 2. Then install dependencies:
+    - regular dependencies for the whole app
+      ```bash
+      go mod download
+      ```
     - `swaggo` - for generating API docs
       ```bash
       go install github.com/swaggo/swag/cmd/swag@latest
@@ -18,7 +22,6 @@ This is a backend service for the URL shortener project. It provides a small RES
     - `atlas` - for handling database migrations
       ```bash
       curl -sSf https://atlasgo.sh | sh
-      go get ariga.io/atlas-provider-gorm
       ```
 
 3. Copy the `.env.example` as `.env` and edit as necessary

@@ -1,9 +1,11 @@
 package infrastructure
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -34,14 +36,24 @@ func createDependencies(config Config) (dependencies, error) {
 	if err != nil {
 		return dependencies{}, fmt.Errorf("could not connect to database: %v", err)
 	}
-	shortLinkRepository := &storage.ShortLinkRepository{Repository: storage.Repository{
-		DB: db,
-	}}
+	shortLinkRepository := &storage.ShortLinkRepository{
+		Repository: storage.Repository{
+			DB: db,
+		},
+	}
 	shortLinkService := &domain.ShortLinkService{
 		Repository: shortLinkRepository,
 		BaseUrl:    config.Domain.BaseUrl,
 	}
-	urlHandler := api.NewApiHandler(shortLinkService)
+	requestInfoRepository := &storage.RequestInfoRepository{
+		Repository: storage.Repository{
+			DB: db,
+		},
+	}
+	requestInfoService := &domain.RequestInfoService{
+		Repository: requestInfoRepository,
+	}
+	urlHandler := api.NewApiHandler(shortLinkService, requestInfoService)
 
 	return dependencies{db, shortLinkRepository, shortLinkService, urlHandler}, nil
 }
@@ -50,6 +62,25 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(
+		func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Body != nil {
+					rawBody, err := io.ReadAll(r.Body)
+					if err != nil {
+						log.Error().Err(err).Msg("failed to read request body in middleware")
+						http.Error(w, "failed to read body", http.StatusBadRequest)
+						return
+					}
+
+					ctx := context.WithValue(r.Context(), "body", rawBody)
+
+					r.Body = io.NopCloser(bytes.NewReader(rawBody))
+
+					next.ServeHTTP(w, r.WithContext(ctx))
+				}
+				next.ServeHTTP(w, r)
+			})
+		},
 		// injects random generated `X-Request-ID` header
 		middleware.RequestID,
 		// sets the `request.RemoteAddr`
