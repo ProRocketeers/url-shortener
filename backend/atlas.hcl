@@ -18,7 +18,7 @@ env "local" {
   url = "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable&timezone=UTC"
 
   migration {
-    dir = "file://migrations"
+    dir = "file://domain/migrations"
   }
 
   format {

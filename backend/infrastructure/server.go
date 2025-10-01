@@ -16,7 +16,7 @@ import (
 	"github.com/ProRocketeers/url-shortener/docs"
 	"github.com/ProRocketeers/url-shortener/domain"
 	"github.com/ProRocketeers/url-shortener/domain/services"
-	"github.com/ProRocketeers/url-shortener/storage"
+	"github.com/ProRocketeers/url-shortener/domain/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

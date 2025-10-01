@@ -9,7 +9,7 @@ import (
 	"github.com/ProRocketeers/url-shortener/domain"
 	"github.com/ProRocketeers/url-shortener/domain/dto"
 	"github.com/ProRocketeers/url-shortener/domain/model"
-	"github.com/ProRocketeers/url-shortener/storage"
+	"github.com/ProRocketeers/url-shortener/domain/storage"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 
