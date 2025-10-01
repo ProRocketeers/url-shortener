@@ -15,6 +15,7 @@ import (
 	"github.com/ProRocketeers/url-shortener/api"
 	"github.com/ProRocketeers/url-shortener/docs"
 	"github.com/ProRocketeers/url-shortener/domain"
+	"github.com/ProRocketeers/url-shortener/domain/query"
 	"github.com/ProRocketeers/url-shortener/domain/services"
 	"github.com/ProRocketeers/url-shortener/domain/storage"
 	"github.com/go-chi/chi/v5"
@@ -41,7 +42,7 @@ func createDependencies(config Config) (dependencies, error) {
 	}
 	shortLinkRepository := &storage.ShortLinkRepository{
 		Repository: storage.Repository{
-			DB: db,
+			DB: query.Use(db),
 		},
 	}
 	shortLinkService := &services.ShortLinkService{
@@ -50,7 +51,7 @@ func createDependencies(config Config) (dependencies, error) {
 	}
 	requestInfoRepository := &storage.RequestInfoRepository{
 		Repository: storage.Repository{
-			DB: db,
+			DB: query.Use(db),
 		},
 	}
 	requestInfoService := &services.RequestInfoService{

@@ -56,7 +56,7 @@ func (s *ShortLinkService) Create(ctx context.Context, originalUrl string, slug 
 
 func (s *ShortLinkService) FindBySlug(ctx context.Context, slug string, checkExpire bool) (model.ShortLink, error) {
 	link, err := s.Repository.FindBySlug(ctx, slug)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if link == nil {
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkNotFound}
 	} else if err != nil {
 		log.Error().
@@ -68,12 +68,12 @@ func (s *ShortLinkService) FindBySlug(ctx context.Context, slug string, checkExp
 	if checkExpire && link.ExpiresAt != nil && time.Now().UTC().After(*link.ExpiresAt) {
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkExpired}
 	}
-	return link, nil
+	return *link, nil
 }
 
 func (s *ShortLinkService) FindById(ctx context.Context, id uint) (model.ShortLink, error) {
 	link, err := s.Repository.FindById(ctx, id)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if link == nil {
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkNotFound}
 	} else if err != nil {
 		log.Error().
@@ -82,12 +82,12 @@ func (s *ShortLinkService) FindById(ctx context.Context, id uint) (model.ShortLi
 			Msg("[admin] getting link other error")
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkOther}
 	}
-	return link, nil
+	return *link, nil
 }
 
 func (s *ShortLinkService) UpdateById(ctx context.Context, id uint, d dto.ShortLinkUpdateDTO) (model.ShortLink, error) {
 	link, err := s.Repository.UpdateById(ctx, id, d)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if link == nil {
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkNotFound}
 	} else if err != nil {
 		log.Error().
@@ -96,7 +96,7 @@ func (s *ShortLinkService) UpdateById(ctx context.Context, id uint, d dto.ShortL
 			Msg("[admin] updating link other error")
 		return model.ShortLink{}, &domain.ShortLinkError{Code: domain.ErrorCodeLinkOther}
 	}
-	return link, nil
+	return *link, nil
 }
 
 func (s *ShortLinkService) DeleteById(ctx context.Context, id uint) error {
