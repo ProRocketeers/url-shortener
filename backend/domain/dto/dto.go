@@ -13,3 +13,9 @@ type RequestInfoDTO struct {
 	Query     map[string][]string
 	Body      map[string]any
 }
+
+type ShortLinkUpdateDTO struct {
+	OriginalURL *string
+	Slug        *string
+	ExpiresAt   *time.Time
+}

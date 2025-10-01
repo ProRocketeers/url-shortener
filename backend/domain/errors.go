@@ -6,7 +6,7 @@ const (
 	ErrorCodeSlugConflict ErrorCode = "slug_conflict"
 	ErrorCodeLinkCreate   ErrorCode = "link_create_error"
 	ErrorCodeLinkNotFound ErrorCode = "link_not_found"
-	ErrorCodeLinkGetOther ErrorCode = "link_get_error"
+	ErrorCodeLinkOther    ErrorCode = "link_other"
 	ErrorCodeLinkExpired  ErrorCode = "link_expired"
 )
 

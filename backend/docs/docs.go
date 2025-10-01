@@ -15,6 +15,248 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/link": {
+            "post": {
+                "description": "Returns a shortened link for the given URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Create a short link",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.createShortLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "slug already used",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/link/id/{id}": {
+            "get": {
+                "description": "Returns a shortened link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid link ID",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Returns updated shortened link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Update a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "fields to update",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.updateShortLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a shortened link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Delete a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "invalid link ID",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/link/slug/{slug}": {
+            "get": {
+                "description": "Returns a shortened link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get a short link by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.shortLinkDto"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/shorten": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
@@ -75,14 +317,8 @@ const docTemplate = `{
                     "307": {
                         "description": "Temporary redirect to URL"
                     },
-                    "400": {
-                        "description": "link expired",
-                        "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
-                        }
-                    },
                     "404": {
-                        "description": "link not found",
+                        "description": "link expired",
                         "schema": {
                             "$ref": "#/definitions/api.genericErrorResponse"
                         }
@@ -98,10 +334,48 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "api.createShortLinkRequest": {
+            "type": "object",
+            "required": [
+                "originalUrl"
+            ],
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
         "api.genericErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.shortLinkDto": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }
@@ -128,6 +402,21 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "shortUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.updateShortLinkRequest": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }

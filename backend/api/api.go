@@ -6,18 +6,19 @@ import (
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/domain"
+	"github.com/ProRocketeers/url-shortener/domain/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
 
 type ApiHandler struct {
-	ShortLinkService   *domain.ShortLinkService
-	RequestInfoService *domain.RequestInfoService
+	ShortLinkService   *services.ShortLinkService
+	RequestInfoService *services.RequestInfoService
 
 	validate *validator.Validate
 }
 
-func NewApiHandler(shortLinkService *domain.ShortLinkService, requestInfoService *domain.RequestInfoService) *ApiHandler {
+func NewApiHandler(shortLinkService *services.ShortLinkService, requestInfoService *services.RequestInfoService) *ApiHandler {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	return &ApiHandler{shortLinkService, requestInfoService, validate}
 }
@@ -93,14 +94,14 @@ func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	slug := chi.URLParam(r, "slug")
-	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug)
+	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug, true)
 	if err != nil {
 		var e *domain.ShortLinkError
 		if errors.As(err, &e) {
 			switch e.Code {
 			case domain.ErrorCodeLinkNotFound:
 				sendJsonError(w, "link not found", http.StatusNotFound)
-			case domain.ErrorCodeLinkGetOther:
+			case domain.ErrorCodeLinkOther:
 				sendJsonError(w, "internal error", http.StatusInternalServerError)
 			case domain.ErrorCodeLinkExpired:
 				sendJsonError(w, "link expired", http.StatusNotFound)

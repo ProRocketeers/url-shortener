@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/domain/dto"
+	"github.com/ProRocketeers/url-shortener/domain/model"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
@@ -81,4 +82,14 @@ func parseBody(r *http.Request) map[string]any {
 	}
 
 	return map[string]any{"text": string(bodyBytes)}
+}
+
+func createShortLinkDto(l model.ShortLink, shortUrl string) shortLinkDto {
+	return shortLinkDto{
+		ID:          l.ID,
+		OriginalURL: l.OriginalURL,
+		Slug:        &l.Slug,
+		ShortURL:    shortUrl,
+		ExpiresAt:   l.ExpiresAt,
+	}
 }

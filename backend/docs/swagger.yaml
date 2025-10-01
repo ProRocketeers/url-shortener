@@ -1,7 +1,32 @@
 definitions:
+  api.createShortLinkRequest:
+    properties:
+      expiresAt:
+        description: needs to be RFC3339 with timezone (or UTC)
+        type: string
+      originalUrl:
+        type: string
+      slug:
+        type: string
+    required:
+    - originalUrl
+    type: object
   api.genericErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  api.shortLinkDto:
+    properties:
+      expiresAt:
+        type: string
+      id:
+        type: integer
+      originalUrl:
+        type: string
+      shortUrl:
+        type: string
+      slug:
         type: string
     type: object
   api.shortenUrlRequest:
@@ -21,6 +46,16 @@ definitions:
       shortUrl:
         type: string
     type: object
+  api.updateShortLinkRequest:
+    properties:
+      expiresAt:
+        description: needs to be RFC3339 with timezone (or UTC)
+        type: string
+      originalUrl:
+        type: string
+      slug:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -36,12 +71,8 @@ paths:
       responses:
         "307":
           description: Temporary redirect to URL
-        "400":
-          description: link expired
-          schema:
-            $ref: '#/definitions/api.genericErrorResponse'
         "404":
-          description: link not found
+          description: link expired
           schema:
             $ref: '#/definitions/api.genericErrorResponse'
         "500":
@@ -49,6 +80,166 @@ paths:
           schema:
             $ref: '#/definitions/api.genericErrorResponse'
       summary: Redirect from short link
+  /admin/link:
+    post:
+      consumes:
+      - application/json
+      description: Returns a shortened link for the given URL
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.createShortLinkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.shortLinkDto'
+        "400":
+          description: slug already used
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Create a short link
+      tags:
+      - admin
+  /admin/link/id/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: invalid link ID
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Delete a short link by ID
+      tags:
+      - admin
+    get:
+      consumes:
+      - application/json
+      description: Returns a shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.shortLinkDto'
+        "400":
+          description: invalid link ID
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Get a short link by ID
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Returns updated shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: fields to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.updateShortLinkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.shortLinkDto'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Update a short link by ID
+      tags:
+      - admin
+  /admin/link/slug/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: Returns a shortened link
+      parameters:
+      - description: slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.shortLinkDto'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Get a short link by slug
+      tags:
+      - admin
   /shorten:
     post:
       consumes:
