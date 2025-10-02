@@ -19,3 +19,14 @@ type ShortLinkUpdateDTO struct {
 	Slug        *string
 	ExpiresAt   *time.Time
 }
+
+type PaginationInfoDTO struct {
+	TotalRecords int64 `json:"totalRecords"`
+	TotalPages   int   `json:"totalPages"`
+	CurrentPage  int   `json:"currentPage"`
+	PreviousPage *int  `json:"previousPage"`
+	NextPage     *int  `json:"nextPage"`
+
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}

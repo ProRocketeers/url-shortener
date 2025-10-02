@@ -108,8 +108,6 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		middleware.Timeout(60*time.Second),
 	)
 
-	r.Handle("/metrics", promhttp.Handler())
-
 	urlRegex := regexp.MustCompile(`^https?://(.+)`)
 
 	docs.SetupSwaggerParams(swag.Spec{
@@ -130,6 +128,8 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 	})
 
+	r.Handle("/metrics", promhttp.Handler())
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello"))
@@ -145,6 +145,10 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 			r.Put("/id/{id:\\d+}", dependencies.adminApiHandler.UpdateShortLinkById)
 			r.Delete("/id/{id:\\d+}", dependencies.adminApiHandler.DeleteShortLinkById)
 			r.Get("/slug/{slug:[a-zA-Z0-9]+}", dependencies.adminApiHandler.GetShortLinkBySlug)
+		})
+		r.Route("/info", func(r chi.Router) {
+			r.Get("/", dependencies.adminApiHandler.FindSingleRequestInfo)
+			r.Get("/list", dependencies.adminApiHandler.ListRequestInfos)
 		})
 	})
 	return r

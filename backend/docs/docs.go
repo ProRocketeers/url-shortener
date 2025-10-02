@@ -15,6 +15,121 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/info": {
+            "get": {
+                "description": "If both params are supplied, ID is used and request ID is ignored",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "info"
+                ],
+                "summary": "Finds a request info by ID or request ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "request ID",
+                        "name": "requestId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RequestInfoDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "request info not found",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/info/list": {
+            "get": {
+                "description": "Supports either combination (offset + limit) or (page size + page) or no pagination\nEither pair must have either both set, or both unset\nIf both pairs are supplied, page size + page is used",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "info"
+                ],
+                "summary": "Lists request infos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.listRequestInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/api.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/link": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
@@ -25,7 +140,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "admin",
+                    "links"
                 ],
                 "summary": "Create a short link",
                 "parameters": [
@@ -64,14 +180,12 @@ const docTemplate = `{
         "/admin/link/id/{id}": {
             "get": {
                 "description": "Returns a shortened link",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "admin",
+                    "links"
                 ],
                 "summary": "Get a short link by ID",
                 "parameters": [
@@ -119,7 +233,8 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "admin",
+                    "links"
                 ],
                 "summary": "Update a short link by ID",
                 "parameters": [
@@ -169,14 +284,12 @@ const docTemplate = `{
             },
             "delete": {
                 "description": "Deletes a shortened link",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "admin",
+                    "links"
                 ],
                 "summary": "Delete a short link by ID",
                 "parameters": [
@@ -216,14 +329,12 @@ const docTemplate = `{
         "/admin/link/slug/{slug}": {
             "get": {
                 "description": "Returns a shortened link",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "admin"
+                    "admin",
+                    "links"
                 ],
                 "summary": "Get a short link by slug",
                 "parameters": [
@@ -360,6 +471,68 @@ const docTemplate = `{
                 }
             }
         },
+        "api.listRequestInfoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.requestInfoDto"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto.PaginationInfoDTO"
+                }
+            }
+        },
+        "api.requestInfoDto": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "realIp": {
+                    "type": "string"
+                },
+                "requestId": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userAgent": {
+                    "type": "string"
+                }
+            }
+        },
         "api.shortLinkDto": {
             "type": "object",
             "properties": {
@@ -417,6 +590,77 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PaginationInfoDTO": {
+            "type": "object",
+            "properties": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "previousPage": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RequestInfoDTO": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "realIP": {
+                    "type": "string"
+                },
+                "requestId": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userAgent": {
                     "type": "string"
                 }
             }

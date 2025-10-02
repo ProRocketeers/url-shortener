@@ -16,6 +16,47 @@ definitions:
       error:
         type: string
     type: object
+  api.listRequestInfoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/api.requestInfoDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto.PaginationInfoDTO'
+    type: object
+  api.requestInfoDto:
+    properties:
+      body:
+        additionalProperties: {}
+        type: object
+      headers:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      id:
+        type: integer
+      method:
+        type: string
+      path:
+        type: string
+      query:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      realIp:
+        type: string
+      requestId:
+        type: string
+      timestamp:
+        type: string
+      userAgent:
+        type: string
+    type: object
   api.shortLinkDto:
     properties:
       expiresAt:
@@ -56,6 +97,53 @@ definitions:
       slug:
         type: string
     type: object
+  dto.PaginationInfoDTO:
+    properties:
+      currentPage:
+        type: integer
+      limit:
+        type: integer
+      nextPage:
+        type: integer
+      offset:
+        type: integer
+      previousPage:
+        type: integer
+      totalPages:
+        type: integer
+      totalRecords:
+        type: integer
+    type: object
+  dto.RequestInfoDTO:
+    properties:
+      body:
+        additionalProperties: {}
+        type: object
+      headers:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      method:
+        type: string
+      path:
+        type: string
+      query:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      realIP:
+        type: string
+      requestId:
+        type: string
+      timestamp:
+        type: string
+      userAgent:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -80,6 +168,85 @@ paths:
           schema:
             $ref: '#/definitions/api.genericErrorResponse'
       summary: Redirect from short link
+  /admin/info:
+    get:
+      description: If both params are supplied, ID is used and request ID is ignored
+      parameters:
+      - description: ID
+        in: query
+        name: id
+        type: integer
+      - description: request ID
+        in: query
+        name: requestId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RequestInfoDTO'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "404":
+          description: request info not found
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Finds a request info by ID or request ID
+      tags:
+      - admin
+      - info
+  /admin/info/list:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Supports either combination (offset + limit) or (page size + page) or no pagination
+        Either pair must have either both set, or both unset
+        If both pairs are supplied, page size + page is used
+      parameters:
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.listRequestInfoResponse'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.genericErrorResponse'
+      summary: Lists request infos
+      tags:
+      - admin
+      - info
   /admin/link:
     post:
       consumes:
@@ -110,10 +277,9 @@ paths:
       summary: Create a short link
       tags:
       - admin
+      - links
   /admin/link/id/{id}:
     delete:
-      consumes:
-      - application/json
       description: Deletes a shortened link
       parameters:
       - description: ID
@@ -141,9 +307,8 @@ paths:
       summary: Delete a short link by ID
       tags:
       - admin
+      - links
     get:
-      consumes:
-      - application/json
       description: Returns a shortened link
       parameters:
       - description: ID
@@ -173,6 +338,7 @@ paths:
       summary: Get a short link by ID
       tags:
       - admin
+      - links
     put:
       consumes:
       - application/json
@@ -211,10 +377,9 @@ paths:
       summary: Update a short link by ID
       tags:
       - admin
+      - links
   /admin/link/slug/{slug}:
     get:
-      consumes:
-      - application/json
       description: Returns a shortened link
       parameters:
       - description: slug
@@ -240,6 +405,7 @@ paths:
       summary: Get a short link by slug
       tags:
       - admin
+      - links
   /shorten:
     post:
       consumes:

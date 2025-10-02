@@ -68,3 +68,31 @@ type RequestInfoRepository struct {
 func (r *RequestInfoRepository) Create(ctx context.Context, info *model.RequestInfo) error {
 	return r.DB.WithContext(ctx).RequestInfo.Create(info)
 }
+
+func (r *RequestInfoRepository) FindById(ctx context.Context, id uint) (*model.RequestInfo, error) {
+	return r.DB.WithContext(ctx).RequestInfo.Where(r.DB.RequestInfo.ID.Eq(id)).First()
+}
+
+func (r *RequestInfoRepository) FindByRequestId(ctx context.Context, requestId string) (*model.RequestInfo, error) {
+	return r.DB.WithContext(ctx).RequestInfo.Where(r.DB.RequestInfo.RequestId.Eq(requestId)).First()
+}
+
+func (r *RequestInfoRepository) List(ctx context.Context) ([]model.RequestInfo, int64, error) {
+	ret := []model.RequestInfo{}
+	infos, err := r.DB.WithContext(ctx).RequestInfo.Find()
+
+	for _, info := range infos {
+		ret = append(ret, *info)
+	}
+	return ret, int64(len(ret)), err
+}
+
+func (r *RequestInfoRepository) PaginatedList(ctx context.Context, offset, limit int) ([]model.RequestInfo, int64, error) {
+	ret := []model.RequestInfo{}
+	infos, totalCount, err := r.DB.WithContext(ctx).RequestInfo.FindByPage(offset, limit)
+
+	for _, info := range infos {
+		ret = append(ret, *info)
+	}
+	return ret, totalCount, err
+}

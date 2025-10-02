@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,7 +30,7 @@ func NewAdminApiHandler(shortLinkService *services.ShortLinkService, requestInfo
 //
 //	@Summary		Create a short link
 //	@Description	Returns a shortened link for the given URL
-//	@Tags			admin
+//	@Tags			admin,links
 //	@Accept			json
 //	@Produce		json
 //	@Param			body		body		createShortLinkRequest	true	"Request body"
@@ -79,8 +80,7 @@ func (h *AdminApiHandler) CreateShortLink(w http.ResponseWriter, r *http.Request
 //
 //	@Summary		Get a short link by ID
 //	@Description	Returns a shortened link
-//	@Tags			admin
-//	@Accept			json
+//	@Tags			admin,links
 //	@Produce		json
 //	@Param			id					path		int	true	"ID"
 //	@Success		200					{object}	shortLinkDto
@@ -90,7 +90,7 @@ func (h *AdminApiHandler) CreateShortLink(w http.ResponseWriter, r *http.Request
 //	@Router			/admin/link/id/{id}	[get]
 func (h *AdminApiHandler) GetShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	uid, err := strconv.ParseUint(id, 10, 32)
+	uid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		sendJsonError(w, "invalid link ID", http.StatusBadRequest)
 		return
@@ -122,8 +122,7 @@ func (h *AdminApiHandler) GetShortLinkById(w http.ResponseWriter, r *http.Reques
 //
 //	@Summary		Get a short link by slug
 //	@Description	Returns a shortened link
-//	@Tags			admin
-//	@Accept			json
+//	@Tags			admin,links
 //	@Produce		json
 //	@Param			slug					path		string	true	"slug"
 //	@Success		200						{object}	shortLinkDto
@@ -159,7 +158,7 @@ func (h *AdminApiHandler) GetShortLinkBySlug(w http.ResponseWriter, r *http.Requ
 //
 //	@Summary		Update a short link by ID
 //	@Description	Returns updated shortened link
-//	@Tags			admin
+//	@Tags			admin,links
 //	@Accept			json
 //	@Produce		json
 //	@Param			id					path		int						true	"ID"
@@ -171,7 +170,7 @@ func (h *AdminApiHandler) GetShortLinkBySlug(w http.ResponseWriter, r *http.Requ
 //	@Router			/admin/link/id/{id}	[put]
 func (h *AdminApiHandler) UpdateShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	uid, err := strconv.ParseUint(id, 10, 32)
+	uid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		sendJsonError(w, "invalid link ID", http.StatusBadRequest)
 		return
@@ -223,8 +222,7 @@ func (h *AdminApiHandler) UpdateShortLinkById(w http.ResponseWriter, r *http.Req
 //
 //	@Summary		Delete a short link by ID
 //	@Description	Deletes a shortened link
-//	@Tags			admin
-//	@Accept			json
+//	@Tags			admin,links
 //	@Produce		json
 //	@Param			id	path	int	true	"ID"
 //	@Success		200
@@ -234,7 +232,7 @@ func (h *AdminApiHandler) UpdateShortLinkById(w http.ResponseWriter, r *http.Req
 //	@Router			/admin/link/id/{id}	[delete]
 func (h *AdminApiHandler) DeleteShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	uid, err := strconv.ParseUint(id, 10, 32)
+	uid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		sendJsonError(w, "invalid link ID", http.StatusBadRequest)
 		return
@@ -257,4 +255,107 @@ func (h *AdminApiHandler) DeleteShortLinkById(w http.ResponseWriter, r *http.Req
 		}
 		return
 	}
+}
+
+// ShortenUrl godoc
+//
+//	@Summary		Finds a request info by ID or request ID
+//	@Description	If both params are supplied, ID is used and request ID is ignored
+//	@Tags			admin,info
+//	@Produce		json
+//	@Param			id			query		int		false	"ID"
+//	@Param			requestId	query		string	false	"request ID"
+//	@Success		200			{object}	dto.RequestInfoDTO
+//	@Failure		400			{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		404			{object}	genericErrorResponse	"request info not found"
+//	@Failure		500			{object}	genericErrorResponse
+//	@Router			/admin/info	[get]
+func (h *AdminApiHandler) FindSingleRequestInfo(w http.ResponseWriter, r *http.Request) {
+	var (
+		uid uint64
+		err error
+	)
+	id := r.URL.Query().Get("id")
+	if id != "" {
+		uid, err = strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			sendJsonError(w, "invalid request info ID", http.StatusBadRequest)
+			return
+		}
+	}
+	requestId := r.URL.Query().Get("requestId")
+
+	if uid == 0 && requestId == "" {
+		sendJsonError(w, "must pass either 'id' or 'requestId' query parameter", http.StatusBadRequest)
+		return
+	}
+
+	info, err := h.RequestInfoService.FindByIdOrRequestId(r.Context(), uint(uid), requestId)
+	if err != nil {
+		var e *domain.RequestInfoError
+		if errors.As(err, &e) {
+			switch e.Code {
+			case domain.ErrorCodeInfoNotFound:
+				sendJsonError(w, "request info not found", http.StatusNotFound)
+			case domain.ErrorCodeInfoOther:
+				sendJsonError(w, "internal error", http.StatusInternalServerError)
+			default:
+				sendJsonError(w, "internal error", http.StatusInternalServerError)
+			}
+		} else {
+			sendJsonError(w, "internal error", http.StatusInternalServerError)
+		}
+		return
+	}
+	sendJsonBody(w, createRequestInfoDto(info))
+}
+
+// ShortenUrl godoc
+//
+//	@Summary		Lists request infos
+//	@Description	Supports either combination (offset + limit) or (page size + page) or no pagination
+//	@Description	Either pair must have either both set, or both unset
+//	@Description	If both pairs are supplied, page size + page is used
+//	@Tags			admin,info
+//	@Accept			json
+//	@Produce		json
+//	@Param			size				query		integer	false	"size"
+//	@Param			page				query		integer	false	"page"
+//	@Param			offset				query		integer	false	"offset"
+//	@Param			limit				query		integer	false	"limit"
+//	@Success		200					{object}	listRequestInfoResponse
+//	@Failure		400					{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		500					{object}	genericErrorResponse
+//	@Router			/admin/info/list	[get]
+func (h *AdminApiHandler) ListRequestInfos(w http.ResponseWriter, r *http.Request) {
+	queryValues := r.URL.Query()
+
+	sizeQ := queryValues.Get("size")
+	pageQ := queryValues.Get("page")
+	offsetQ := queryValues.Get("offset")
+	limitQ := queryValues.Get("limit")
+
+	offset, limit, err := resolveRequestInfoListParams(sizeQ, pageQ, offsetQ, limitQ)
+
+	if err != nil {
+		sendJsonError(w, fmt.Sprintf("input validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	infos, pagination, err := h.RequestInfoService.ListRequestInfos(r.Context(), offset, limit)
+
+	if err != nil {
+		sendJsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	sendJsonBody(w, listRequestInfoResponse{
+		Data: func() []requestInfoDto {
+			ret := []requestInfoDto{}
+			for _, info := range infos {
+				ret = append(ret, createRequestInfoDto(info))
+			}
+			return ret
+		}(),
+		Pagination: pagination,
+	})
 }
