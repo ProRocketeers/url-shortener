@@ -50,19 +50,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request parameters",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "404": {
                         "description": "request info not found",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -112,19 +112,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.listRequestInfoResponse"
+                            "$ref": "#/definitions/v1.listRequestInfoResponse"
                         }
                     },
                     "400": {
                         "description": "invalid request parameters",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -151,7 +151,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.createShortLinkRequest"
+                            "$ref": "#/definitions/v1.createShortLinkRequest"
                         }
                     }
                 ],
@@ -159,19 +159,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortLinkDto"
+                            "$ref": "#/definitions/v1.shortLinkDto"
                         }
                     },
                     "400": {
                         "description": "slug already used",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -201,25 +201,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortLinkDto"
+                            "$ref": "#/definitions/v1.shortLinkDto"
                         }
                     },
                     "400": {
                         "description": "invalid link ID",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "404": {
                         "description": "link not found",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -251,7 +251,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.updateShortLinkRequest"
+                            "$ref": "#/definitions/v1.updateShortLinkRequest"
                         }
                     }
                 ],
@@ -259,25 +259,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortLinkDto"
+                            "$ref": "#/definitions/v1.shortLinkDto"
                         }
                     },
                     "400": {
                         "description": "invalid request parameters",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "404": {
                         "description": "link not found",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -308,19 +308,19 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid link ID",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "404": {
                         "description": "link not found",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -350,19 +350,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortLinkDto"
+                            "$ref": "#/definitions/v1.shortLinkDto"
                         }
                     },
                     "404": {
                         "description": "link not found",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -385,7 +385,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.shortenUrlRequest"
+                            "$ref": "#/definitions/v1.shortenUrlRequest"
                         }
                     }
                 ],
@@ -393,19 +393,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortenUrlResponse"
+                            "$ref": "#/definitions/v1.shortenUrlResponse"
                         }
                     },
                     "400": {
                         "description": "slug already used",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -431,13 +431,13 @@ const docTemplate = `{
                     "404": {
                         "description": "link expired",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -445,155 +445,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api.createShortLinkRequest": {
-            "type": "object",
-            "required": [
-                "originalUrl"
-            ],
-            "properties": {
-                "expiresAt": {
-                    "description": "needs to be RFC3339 with timezone (or UTC)",
-                    "type": "string"
-                },
-                "originalUrl": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.genericErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.listRequestInfoResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.requestInfoDto"
-                    }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/dto.PaginationInfoDTO"
-                }
-            }
-        },
-        "api.requestInfoDto": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "headers": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "method": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "query": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "realIp": {
-                    "type": "string"
-                },
-                "requestId": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                },
-                "userAgent": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.shortLinkDto": {
-            "type": "object",
-            "properties": {
-                "expiresAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "originalUrl": {
-                    "type": "string"
-                },
-                "shortUrl": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.shortenUrlRequest": {
-            "type": "object",
-            "required": [
-                "originalUrl"
-            ],
-            "properties": {
-                "expiresAt": {
-                    "description": "needs to be RFC3339 with timezone (or UTC)",
-                    "type": "string"
-                },
-                "originalUrl": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.shortenUrlResponse": {
-            "type": "object",
-            "properties": {
-                "shortUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "api.updateShortLinkRequest": {
-            "type": "object",
-            "properties": {
-                "expiresAt": {
-                    "description": "needs to be RFC3339 with timezone (or UTC)",
-                    "type": "string"
-                },
-                "originalUrl": {
-                    "type": "string"
-                },
-                "slug": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.PaginationInfoDTO": {
             "type": "object",
             "properties": {
@@ -661,6 +512,155 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userAgent": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.createShortLinkRequest": {
+            "type": "object",
+            "required": [
+                "originalUrl"
+            ],
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.genericErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.listRequestInfoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.requestInfoDto"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto.PaginationInfoDTO"
+                }
+            }
+        },
+        "v1.requestInfoDto": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "realIp": {
+                    "type": "string"
+                },
+                "requestId": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userAgent": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortLinkDto": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortenUrlRequest": {
+            "type": "object",
+            "required": [
+                "originalUrl"
+            ],
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortenUrlResponse": {
+            "type": "object",
+            "properties": {
+                "shortUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.updateShortLinkRequest": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }

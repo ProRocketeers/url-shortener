@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/ProRocketeers/url-shortener/api"
+	v1 "github.com/ProRocketeers/url-shortener/api/v1"
 	"github.com/ProRocketeers/url-shortener/docs"
 	"github.com/ProRocketeers/url-shortener/domain"
 	"github.com/ProRocketeers/url-shortener/domain/query"
@@ -31,8 +31,8 @@ type dependencies struct {
 	db                  *gorm.DB
 	shortLinkRepository *storage.ShortLinkRepository
 	shortLinkService    *services.ShortLinkService
-	apiHandler          *api.ApiHandler
-	adminApiHandler     *api.AdminApiHandler
+	apiHandler          *v1.ApiHandler
+	adminApiHandler     *v1.AdminApiHandler
 }
 
 func createDependencies(config Config) (dependencies, error) {
@@ -57,8 +57,8 @@ func createDependencies(config Config) (dependencies, error) {
 	requestInfoService := &services.RequestInfoService{
 		Repository: requestInfoRepository,
 	}
-	apiHandler := api.NewApiHandler(shortLinkService, requestInfoService)
-	adminApiHandler := api.NewAdminApiHandler(shortLinkService, requestInfoService)
+	apiHandler := v1.NewApiHandler(shortLinkService, requestInfoService)
+	adminApiHandler := v1.NewAdminApiHandler(shortLinkService, requestInfoService)
 
 	return dependencies{db, shortLinkRepository, shortLinkService, apiHandler, adminApiHandler}, nil
 }
@@ -114,7 +114,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		Title:    "URL Shortener API",
 		Version:  config.Metadata.Version,
 		Host:     urlRegex.ReplaceAllString(config.Domain.BaseUrl, ""),
-		BasePath: "/",
+		BasePath: "/api/v1",
 		Schemes: func() []string {
 			if config.Environment == DevelopmentEnvironment {
 				return []string{"http"}
@@ -135,20 +135,22 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		w.Write([]byte("hello"))
 	})
 
-	r.Post("/shorten", dependencies.apiHandler.ShortenUrl)
-	r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Post("/shorten", dependencies.apiHandler.ShortenUrl)
+		r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
 
-	r.Route("/admin", func(r chi.Router) {
-		r.Route("/link", func(r chi.Router) {
-			r.Post("/", dependencies.adminApiHandler.CreateShortLink)
-			r.Get("/id/{id:\\d+}", dependencies.adminApiHandler.GetShortLinkById)
-			r.Put("/id/{id:\\d+}", dependencies.adminApiHandler.UpdateShortLinkById)
-			r.Delete("/id/{id:\\d+}", dependencies.adminApiHandler.DeleteShortLinkById)
-			r.Get("/slug/{slug:[a-zA-Z0-9]+}", dependencies.adminApiHandler.GetShortLinkBySlug)
-		})
-		r.Route("/info", func(r chi.Router) {
-			r.Get("/", dependencies.adminApiHandler.FindSingleRequestInfo)
-			r.Get("/list", dependencies.adminApiHandler.ListRequestInfos)
+		r.Route("/admin", func(r chi.Router) {
+			r.Route("/link", func(r chi.Router) {
+				r.Post("/", dependencies.adminApiHandler.CreateShortLink)
+				r.Get("/id/{id:\\d+}", dependencies.adminApiHandler.GetShortLinkById)
+				r.Put("/id/{id:\\d+}", dependencies.adminApiHandler.UpdateShortLinkById)
+				r.Delete("/id/{id:\\d+}", dependencies.adminApiHandler.DeleteShortLinkById)
+				r.Get("/slug/{slug:[a-zA-Z0-9]+}", dependencies.adminApiHandler.GetShortLinkBySlug)
+			})
+			r.Route("/info", func(r chi.Router) {
+				r.Get("/", dependencies.adminApiHandler.FindSingleRequestInfo)
+				r.Get("/list", dependencies.adminApiHandler.ListRequestInfos)
+			})
 		})
 	})
 	return r
