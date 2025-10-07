@@ -31,4 +31,8 @@ env "local" {
 
 env "runtime" {
   url = getenv("ATLAS_DATABASE_URL")
+
+  migration {
+    dir = "file://domain/migrations"
+  }
 }
