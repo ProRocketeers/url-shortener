@@ -1,4 +1,4 @@
-package api
+package v1
 
 import (
 	"errors"
@@ -6,18 +6,19 @@ import (
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/domain"
+	"github.com/ProRocketeers/url-shortener/domain/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
 
 type ApiHandler struct {
-	ShortLinkService   *domain.ShortLinkService
-	RequestInfoService *domain.RequestInfoService
+	ShortLinkService   *services.ShortLinkService
+	RequestInfoService *services.RequestInfoService
 
 	validate *validator.Validate
 }
 
-func NewApiHandler(shortLinkService *domain.ShortLinkService, requestInfoService *domain.RequestInfoService) *ApiHandler {
+func NewApiHandler(shortLinkService *services.ShortLinkService, requestInfoService *services.RequestInfoService) *ApiHandler {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	return &ApiHandler{shortLinkService, requestInfoService, validate}
 }
@@ -32,7 +33,7 @@ func NewApiHandler(shortLinkService *domain.ShortLinkService, requestInfoService
 //	@Success		200			{object}	shortenUrlResponse
 //	@Failure		400			{object}	genericErrorResponse	"slug already used"
 //	@Failure		500			{object}	genericErrorResponse
-//	@Router			/shorten	[post]
+//	@Router			/v1/shorten	[post]
 func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))
@@ -86,21 +87,21 @@ func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 //	@Failure		404		{object}	genericErrorResponse	"link not found"
 //	@Failure		404		{object}	genericErrorResponse	"link expired"
 //	@Failure		500		{object}	genericErrorResponse	"internal error"
-//	@Router			/{slug} [get]
+//	@Router			/v1/{slug} [get]
 func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))
 	}()
 
 	slug := chi.URLParam(r, "slug")
-	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug)
+	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug, true)
 	if err != nil {
 		var e *domain.ShortLinkError
 		if errors.As(err, &e) {
 			switch e.Code {
 			case domain.ErrorCodeLinkNotFound:
 				sendJsonError(w, "link not found", http.StatusNotFound)
-			case domain.ErrorCodeLinkGetOther:
+			case domain.ErrorCodeLinkOther:
 				sendJsonError(w, "internal error", http.StatusInternalServerError)
 			case domain.ErrorCodeLinkExpired:
 				sendJsonError(w, "link expired", http.StatusNotFound)

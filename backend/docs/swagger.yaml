@@ -1,10 +1,52 @@
 definitions:
-  api.genericErrorResponse:
+  dto.PaginationInfoDTO:
     properties:
-      error:
+      currentPage:
+        type: integer
+      limit:
+        type: integer
+      nextPage:
+        type: integer
+      offset:
+        type: integer
+      previousPage:
+        type: integer
+      totalPages:
+        type: integer
+      totalRecords:
+        type: integer
+    type: object
+  dto.RequestInfoDTO:
+    properties:
+      body:
+        additionalProperties: {}
+        type: object
+      headers:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      method:
+        type: string
+      path:
+        type: string
+      query:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      realIP:
+        type: string
+      requestId:
+        type: string
+      timestamp:
+        type: string
+      userAgent:
         type: string
     type: object
-  api.shortenUrlRequest:
+  v1.createShortLinkRequest:
     properties:
       expiresAt:
         description: needs to be RFC3339 with timezone (or UTC)
@@ -16,15 +58,96 @@ definitions:
     required:
     - originalUrl
     type: object
-  api.shortenUrlResponse:
+  v1.genericErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  v1.listRequestInfoResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/v1.requestInfoDto'
+        type: array
+      pagination:
+        $ref: '#/definitions/dto.PaginationInfoDTO'
+    type: object
+  v1.requestInfoDto:
+    properties:
+      body:
+        additionalProperties: {}
+        type: object
+      headers:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      id:
+        type: integer
+      method:
+        type: string
+      path:
+        type: string
+      query:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+      realIp:
+        type: string
+      requestId:
+        type: string
+      timestamp:
+        type: string
+      userAgent:
+        type: string
+    type: object
+  v1.shortLinkDto:
+    properties:
+      expiresAt:
+        type: string
+      id:
+        type: integer
+      originalUrl:
+        type: string
+      shortUrl:
+        type: string
+      slug:
+        type: string
+    type: object
+  v1.shortenUrlRequest:
+    properties:
+      expiresAt:
+        description: needs to be RFC3339 with timezone (or UTC)
+        type: string
+      originalUrl:
+        type: string
+      slug:
+        type: string
+    required:
+    - originalUrl
+    type: object
+  v1.shortenUrlResponse:
     properties:
       shortUrl:
+        type: string
+    type: object
+  v1.updateShortLinkRequest:
+    properties:
+      expiresAt:
+        description: needs to be RFC3339 with timezone (or UTC)
+        type: string
+      originalUrl:
+        type: string
+      slug:
         type: string
     type: object
 info:
   contact: {}
 paths:
-  /{slug}:
+  /v1/{slug}:
     get:
       description: Redirects the user to the original URL in the link
       parameters:
@@ -36,20 +159,95 @@ paths:
       responses:
         "307":
           description: Temporary redirect to URL
-        "400":
+        "404":
           description: link expired
           schema:
-            $ref: '#/definitions/api.genericErrorResponse'
-        "404":
-          description: link not found
-          schema:
-            $ref: '#/definitions/api.genericErrorResponse'
+            $ref: '#/definitions/v1.genericErrorResponse'
         "500":
           description: internal error
           schema:
-            $ref: '#/definitions/api.genericErrorResponse'
+            $ref: '#/definitions/v1.genericErrorResponse'
       summary: Redirect from short link
-  /shorten:
+  /v1/admin/info:
+    get:
+      description: If both params are supplied, ID is used and request ID is ignored
+      parameters:
+      - description: ID
+        in: query
+        name: id
+        type: integer
+      - description: request ID
+        in: query
+        name: requestId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RequestInfoDTO'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "404":
+          description: request info not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Finds a request info by ID or request ID
+      tags:
+      - admin
+      - info
+  /v1/admin/info/list:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Supports either combination (offset + limit) or (page size + page) or no pagination
+        Either pair must have either both set, or both unset
+        If both pairs are supplied, page size + page is used
+      parameters:
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.listRequestInfoResponse'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Lists request infos
+      tags:
+      - admin
+      - info
+  /v1/admin/link:
     post:
       consumes:
       - application/json
@@ -60,21 +258,180 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api.shortenUrlRequest'
+          $ref: '#/definitions/v1.createShortLinkRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.shortenUrlResponse'
+            $ref: '#/definitions/v1.shortLinkDto'
         "400":
           description: slug already used
           schema:
-            $ref: '#/definitions/api.genericErrorResponse'
+            $ref: '#/definitions/v1.genericErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/api.genericErrorResponse'
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Create a short link
+      tags:
+      - admin
+      - links
+  /v1/admin/link/id/{id}:
+    delete:
+      description: Deletes a shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: invalid link ID
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Delete a short link by ID
+      tags:
+      - admin
+      - links
+    get:
+      description: Returns a shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.shortLinkDto'
+        "400":
+          description: invalid link ID
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Get a short link by ID
+      tags:
+      - admin
+      - links
+    put:
+      consumes:
+      - application/json
+      description: Returns updated shortened link
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: fields to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.updateShortLinkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.shortLinkDto'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Update a short link by ID
+      tags:
+      - admin
+      - links
+  /v1/admin/link/slug/{slug}:
+    get:
+      description: Returns a shortened link
+      parameters:
+      - description: slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.shortLinkDto'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Get a short link by slug
+      tags:
+      - admin
+      - links
+  /v1/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Returns a shortened link for the given URL
+      parameters:
+      - description: Request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.shortenUrlRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.shortenUrlResponse'
+        "400":
+          description: slug already used
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
       summary: Shorten an URL
 swagger: "2.0"

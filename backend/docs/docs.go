@@ -15,7 +15,360 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/shorten": {
+        "/v1/admin/info": {
+            "get": {
+                "description": "If both params are supplied, ID is used and request ID is ignored",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "info"
+                ],
+                "summary": "Finds a request info by ID or request ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "request ID",
+                        "name": "requestId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RequestInfoDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "request info not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/info/list": {
+            "get": {
+                "description": "Supports either combination (offset + limit) or (page size + page) or no pagination\nEither pair must have either both set, or both unset\nIf both pairs are supplied, page size + page is used",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "info"
+                ],
+                "summary": "Lists request infos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.listRequestInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/link": {
+            "post": {
+                "description": "Returns a shortened link for the given URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Create a short link",
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.createShortLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "slug already used",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/link/id/{id}": {
+            "get": {
+                "description": "Returns a shortened link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Get a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid link ID",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Returns updated shortened link",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Update a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "fields to update",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.updateShortLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.shortLinkDto"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a shortened link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Delete a short link by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "invalid link ID",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/admin/link/slug/{slug}": {
+            "get": {
+                "description": "Returns a shortened link",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Get a short link by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.shortLinkDto"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/shorten": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
                 "consumes": [
@@ -32,7 +385,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.shortenUrlRequest"
+                            "$ref": "#/definitions/v1.shortenUrlRequest"
                         }
                     }
                 ],
@@ -40,25 +393,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.shortenUrlResponse"
+                            "$ref": "#/definitions/v1.shortenUrlResponse"
                         }
                     },
                     "400": {
                         "description": "slug already used",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/{slug}": {
+        "/v1/{slug}": {
             "get": {
                 "description": "Redirects the user to the original URL in the link",
                 "summary": "Redirect from short link",
@@ -75,22 +428,16 @@ const docTemplate = `{
                     "307": {
                         "description": "Temporary redirect to URL"
                     },
-                    "400": {
+                    "404": {
                         "description": "link expired",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "link not found",
-                        "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     },
                     "500": {
                         "description": "internal error",
                         "schema": {
-                            "$ref": "#/definitions/api.genericErrorResponse"
+                            "$ref": "#/definitions/v1.genericErrorResponse"
                         }
                     }
                 }
@@ -98,15 +445,78 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api.genericErrorResponse": {
+        "dto.PaginationInfoDTO": {
             "type": "object",
             "properties": {
-                "error": {
+                "currentPage": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "nextPage": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "previousPage": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
+                },
+                "totalRecords": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RequestInfoDTO": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "realIP": {
+                    "type": "string"
+                },
+                "requestId": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userAgent": {
                     "type": "string"
                 }
             }
         },
-        "api.shortenUrlRequest": {
+        "v1.createShortLinkRequest": {
             "type": "object",
             "required": [
                 "originalUrl"
@@ -124,10 +534,133 @@ const docTemplate = `{
                 }
             }
         },
-        "api.shortenUrlResponse": {
+        "v1.genericErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.listRequestInfoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.requestInfoDto"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto.PaginationInfoDTO"
+                }
+            }
+        },
+        "v1.requestInfoDto": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "realIp": {
+                    "type": "string"
+                },
+                "requestId": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userAgent": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortLinkDto": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortenUrlRequest": {
+            "type": "object",
+            "required": [
+                "originalUrl"
+            ],
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.shortenUrlResponse": {
             "type": "object",
             "properties": {
                 "shortUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.updateShortLinkRequest": {
+            "type": "object",
+            "properties": {
+                "expiresAt": {
+                    "description": "needs to be RFC3339 with timezone (or UTC)",
+                    "type": "string"
+                },
+                "originalUrl": {
+                    "type": "string"
+                },
+                "slug": {
                     "type": "string"
                 }
             }

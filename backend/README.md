@@ -45,12 +45,21 @@ make gen-swagger
 ```
 
 ### Migrations
-To create a new migration after updating the models, run
-```bash
-make create-migration NAME=migration_name
-```
+After updating the models, run following:
+1. Create a new database migration
+    ```bash
+    make create-migration NAME=migration_name
+    ```
+2. Apply to your local DB 
+    ```bash
+    make migrate-dev
+    ```
+3. Finally regenerate the query engine
+    ```bash
+    make gen-schema
+    ```
 
-And then apply to your local DB 
+Or, if you're feeling lazy, here's a shortcut that does all of it at once
 ```bash
-make migrate-dev
+make update-model NAME=migration_name
 ```

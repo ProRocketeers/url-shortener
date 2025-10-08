@@ -13,3 +13,20 @@ type RequestInfoDTO struct {
 	Query     map[string][]string
 	Body      map[string]any
 }
+
+type ShortLinkUpdateDTO struct {
+	OriginalURL *string
+	Slug        *string
+	ExpiresAt   *time.Time
+}
+
+type PaginationInfoDTO struct {
+	TotalRecords int64 `json:"totalRecords"`
+	TotalPages   int   `json:"totalPages"`
+	CurrentPage  int   `json:"currentPage"`
+	PreviousPage *int  `json:"previousPage"`
+	NextPage     *int  `json:"nextPage"`
+
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}
