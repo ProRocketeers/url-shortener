@@ -33,11 +33,11 @@ func NewAdminApiHandler(shortLinkService *services.ShortLinkService, requestInfo
 //	@Tags			admin,links
 //	@Accept			json
 //	@Produce		json
-//	@Param			body		body		createShortLinkRequest	true	"Request body"
-//	@Success		200			{object}	shortLinkDto
-//	@Failure		400			{object}	genericErrorResponse	"slug already used"
-//	@Failure		500			{object}	genericErrorResponse
-//	@Router			/admin/link	[post]
+//	@Param			body			body		createShortLinkRequest	true	"Request body"
+//	@Success		200				{object}	shortLinkDto
+//	@Failure		400				{object}	genericErrorResponse	"slug already used"
+//	@Failure		500				{object}	genericErrorResponse
+//	@Router			/v1/admin/link	[post]
 func (h *AdminApiHandler) CreateShortLink(w http.ResponseWriter, r *http.Request) {
 	req, err := parseJsonBody[createShortLinkRequest](r)
 	if err != nil {
@@ -82,12 +82,12 @@ func (h *AdminApiHandler) CreateShortLink(w http.ResponseWriter, r *http.Request
 //	@Description	Returns a shortened link
 //	@Tags			admin,links
 //	@Produce		json
-//	@Param			id					path		int	true	"ID"
-//	@Success		200					{object}	shortLinkDto
-//	@Failure		400					{object}	genericErrorResponse	"invalid link ID"
-//	@Failure		404					{object}	genericErrorResponse	"link not found"
-//	@Failure		500					{object}	genericErrorResponse
-//	@Router			/admin/link/id/{id}	[get]
+//	@Param			id						path		int	true	"ID"
+//	@Success		200						{object}	shortLinkDto
+//	@Failure		400						{object}	genericErrorResponse	"invalid link ID"
+//	@Failure		404						{object}	genericErrorResponse	"link not found"
+//	@Failure		500						{object}	genericErrorResponse
+//	@Router			/v1/admin/link/id/{id}	[get]
 func (h *AdminApiHandler) GetShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	uid, err := strconv.ParseUint(id, 10, 64)
@@ -124,11 +124,11 @@ func (h *AdminApiHandler) GetShortLinkById(w http.ResponseWriter, r *http.Reques
 //	@Description	Returns a shortened link
 //	@Tags			admin,links
 //	@Produce		json
-//	@Param			slug					path		string	true	"slug"
-//	@Success		200						{object}	shortLinkDto
-//	@Failure		404						{object}	genericErrorResponse	"link not found"
-//	@Failure		500						{object}	genericErrorResponse
-//	@Router			/admin/link/slug/{slug}	[get]
+//	@Param			slug						path		string	true	"slug"
+//	@Success		200							{object}	shortLinkDto
+//	@Failure		404							{object}	genericErrorResponse	"link not found"
+//	@Failure		500							{object}	genericErrorResponse
+//	@Router			/v1/admin/link/slug/{slug}	[get]
 func (h *AdminApiHandler) GetShortLinkBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 
@@ -161,13 +161,13 @@ func (h *AdminApiHandler) GetShortLinkBySlug(w http.ResponseWriter, r *http.Requ
 //	@Tags			admin,links
 //	@Accept			json
 //	@Produce		json
-//	@Param			id					path		int						true	"ID"
-//	@Param			body				body		updateShortLinkRequest	true	"fields to update"
-//	@Success		200					{object}	shortLinkDto
-//	@Failure		400					{object}	genericErrorResponse	"invalid request parameters"
-//	@Failure		404					{object}	genericErrorResponse	"link not found"
-//	@Failure		500					{object}	genericErrorResponse
-//	@Router			/admin/link/id/{id}	[put]
+//	@Param			id						path		int						true	"ID"
+//	@Param			body					body		updateShortLinkRequest	true	"fields to update"
+//	@Success		200						{object}	shortLinkDto
+//	@Failure		400						{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		404						{object}	genericErrorResponse	"link not found"
+//	@Failure		500						{object}	genericErrorResponse
+//	@Router			/v1/admin/link/id/{id}	[put]
 func (h *AdminApiHandler) UpdateShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	uid, err := strconv.ParseUint(id, 10, 64)
@@ -226,10 +226,10 @@ func (h *AdminApiHandler) UpdateShortLinkById(w http.ResponseWriter, r *http.Req
 //	@Produce		json
 //	@Param			id	path	int	true	"ID"
 //	@Success		200
-//	@Failure		400					{object}	genericErrorResponse	"invalid link ID"
-//	@Failure		404					{object}	genericErrorResponse	"link not found"
-//	@Failure		500					{object}	genericErrorResponse
-//	@Router			/admin/link/id/{id}	[delete]
+//	@Failure		400						{object}	genericErrorResponse	"invalid link ID"
+//	@Failure		404						{object}	genericErrorResponse	"link not found"
+//	@Failure		500						{object}	genericErrorResponse
+//	@Router			/v1/admin/link/id/{id}	[delete]
 func (h *AdminApiHandler) DeleteShortLinkById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	uid, err := strconv.ParseUint(id, 10, 64)
@@ -263,13 +263,13 @@ func (h *AdminApiHandler) DeleteShortLinkById(w http.ResponseWriter, r *http.Req
 //	@Description	If both params are supplied, ID is used and request ID is ignored
 //	@Tags			admin,info
 //	@Produce		json
-//	@Param			id			query		int		false	"ID"
-//	@Param			requestId	query		string	false	"request ID"
-//	@Success		200			{object}	dto.RequestInfoDTO
-//	@Failure		400			{object}	genericErrorResponse	"invalid request parameters"
-//	@Failure		404			{object}	genericErrorResponse	"request info not found"
-//	@Failure		500			{object}	genericErrorResponse
-//	@Router			/admin/info	[get]
+//	@Param			id				query		int		false	"ID"
+//	@Param			requestId		query		string	false	"request ID"
+//	@Success		200				{object}	dto.RequestInfoDTO
+//	@Failure		400				{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		404				{object}	genericErrorResponse	"request info not found"
+//	@Failure		500				{object}	genericErrorResponse
+//	@Router			/v1/admin/info	[get]
 func (h *AdminApiHandler) FindSingleRequestInfo(w http.ResponseWriter, r *http.Request) {
 	var (
 		uid uint64
@@ -326,7 +326,7 @@ func (h *AdminApiHandler) FindSingleRequestInfo(w http.ResponseWriter, r *http.R
 //	@Success		200					{object}	listRequestInfoResponse
 //	@Failure		400					{object}	genericErrorResponse	"invalid request parameters"
 //	@Failure		500					{object}	genericErrorResponse
-//	@Router			/admin/info/list	[get]
+//	@Router			/v1/admin/info/list	[get]
 func (h *AdminApiHandler) ListRequestInfos(w http.ResponseWriter, r *http.Request) {
 	queryValues := r.URL.Query()
 

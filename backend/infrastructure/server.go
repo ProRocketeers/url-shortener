@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"regexp"
 	"time"
 
 	v1 "github.com/ProRocketeers/url-shortener/api/v1"
@@ -108,13 +107,22 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		middleware.Timeout(60*time.Second),
 	)
 
-	urlRegex := regexp.MustCompile(`^https?://(.+)`)
+	// slight chaos in what config things are needed
+	// swagger needs some kind of base URL, which is prepended to the individual API requests
+	// so if it will realistically run under `labs.prork.cz/shortener/api` (which routes just the requests to this container)
+	// then our original prefix `/api` should probably go away, so we'll end up with e.g. `https://labs.prork.cz/shortener/api/v1/shorten`
 
+	// in which case, Swagger wants the `labs.prork.cz` and `/shortener/api`, potentially even `https`
+	// the API also needs the full base path to which it should append these endpoints, so it wants `https://labs.prork.cz/shortener/api`
+	// if port plays a role, it can be a part of the host and it doesn't change anything (but keep it as a separate property as well)
+
+	// it's probably cleaner to represent all these fields separately in config, but to me it doesn't matter if it's separate ENVs or 1 ENV that can be parsed and arrive at the same point
+	// if you need to edit 1 part of it, just edit the base path completely, we can parse it
 	docs.SetupSwaggerParams(swag.Spec{
 		Title:    "URL Shortener API",
 		Version:  config.Metadata.Version,
-		Host:     urlRegex.ReplaceAllString(config.Domain.BaseUrl, ""),
-		BasePath: "/api/v1",
+		Host:     config.Domain.BaseUrl.Host,
+		BasePath: config.Domain.BaseUrl.Path,
 		Schemes: func() []string {
 			if config.Environment == DevelopmentEnvironment {
 				return []string{"http"}
@@ -135,7 +143,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		w.Write([]byte("hello"))
 	})
 
-	r.Route("/api/v1", func(r chi.Router) {
+	r.Route("/v1", func(r chi.Router) {
 		r.Post("/shorten", dependencies.apiHandler.ShortenUrl)
 		r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
 

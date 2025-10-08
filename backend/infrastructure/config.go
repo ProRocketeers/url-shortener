@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"time"
 
@@ -33,7 +34,7 @@ var databaseLogLevelMap = map[string]gormlogger.LogLevel{
 	"info":   gormlogger.Info,
 }
 
-type serverConfigMeta struct {
+type versionMetadata struct {
 	Version    string
 	CommitHash string
 	BuildTime  string
@@ -51,11 +52,11 @@ type databaseConfig struct {
 
 type domainConfig struct {
 	ExpiredLinkCleanupInterval time.Duration
-	BaseUrl                    string // including the protocol and possibly port
+	BaseUrl                    url.URL
 }
 
 type Config struct {
-	Metadata    serverConfigMeta
+	Metadata    versionMetadata
 	Environment environment
 	Port        int
 	Database    databaseConfig
@@ -92,8 +93,17 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 		return Config{}, fmt.Errorf("invalid environment %s", environmentStr)
 	}
 
+	baseUrlStr := viper.GetString("BASE_URL")
+	if baseUrlStr == "" {
+		return Config{}, fmt.Errorf("base URL not specified")
+	}
+	baseUrl, err := url.Parse(baseUrlStr)
+	if err != nil {
+		return Config{}, fmt.Errorf("parsing base URL: %v", err)
+	}
+
 	cfg := Config{
-		Metadata: serverConfigMeta{
+		Metadata: versionMetadata{
 			version,
 			commitHash,
 			buildTime,
@@ -110,7 +120,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 			SlowQueryThreshold: viper.GetDuration("DB_SLOW_QUERY_THRESHOLD"),
 		},
 		Domain: domainConfig{
-			BaseUrl:                    viper.GetString("BASE_URL"),
+			BaseUrl:                    *baseUrl,
 			ExpiredLinkCleanupInterval: viper.GetDuration("EXPIRED_LINK_CLEANUP_INTERVAL"),
 		},
 	}

@@ -147,7 +147,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /{slug}:
+  /v1/{slug}:
     get:
       description: Redirects the user to the original URL in the link
       parameters:
@@ -168,7 +168,7 @@ paths:
           schema:
             $ref: '#/definitions/v1.genericErrorResponse'
       summary: Redirect from short link
-  /admin/info:
+  /v1/admin/info:
     get:
       description: If both params are supplied, ID is used and request ID is ignored
       parameters:
@@ -203,7 +203,7 @@ paths:
       tags:
       - admin
       - info
-  /admin/info/list:
+  /v1/admin/info/list:
     get:
       consumes:
       - application/json
@@ -247,7 +247,7 @@ paths:
       tags:
       - admin
       - info
-  /admin/link:
+  /v1/admin/link:
     post:
       consumes:
       - application/json
@@ -278,7 +278,7 @@ paths:
       tags:
       - admin
       - links
-  /admin/link/id/{id}:
+  /v1/admin/link/id/{id}:
     delete:
       description: Deletes a shortened link
       parameters:
@@ -378,7 +378,7 @@ paths:
       tags:
       - admin
       - links
-  /admin/link/slug/{slug}:
+  /v1/admin/link/slug/{slug}:
     get:
       description: Returns a shortened link
       parameters:
@@ -406,7 +406,7 @@ paths:
       tags:
       - admin
       - links
-  /shorten:
+  /v1/shorten:
     post:
       consumes:
       - application/json

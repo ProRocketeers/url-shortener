@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/info": {
+        "/v1/admin/info": {
             "get": {
                 "description": "If both params are supplied, ID is used and request ID is ignored",
                 "produces": [
@@ -68,7 +68,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/info/list": {
+        "/v1/admin/info/list": {
             "get": {
                 "description": "Supports either combination (offset + limit) or (page size + page) or no pagination\nEither pair must have either both set, or both unset\nIf both pairs are supplied, page size + page is used",
                 "consumes": [
@@ -130,7 +130,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/link": {
+        "/v1/admin/link": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
                 "consumes": [
@@ -177,7 +177,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/link/id/{id}": {
+        "/v1/admin/link/id/{id}": {
             "get": {
                 "description": "Returns a shortened link",
                 "produces": [
@@ -326,7 +326,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/link/slug/{slug}": {
+        "/v1/admin/link/slug/{slug}": {
             "get": {
                 "description": "Returns a shortened link",
                 "produces": [
@@ -368,7 +368,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shorten": {
+        "/v1/shorten": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
                 "consumes": [
@@ -411,7 +411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/{slug}": {
+        "/v1/{slug}": {
             "get": {
                 "description": "Redirects the user to the original URL in the link",
                 "summary": "Redirect from short link",

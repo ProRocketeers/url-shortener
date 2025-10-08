@@ -33,7 +33,7 @@ func NewApiHandler(shortLinkService *services.ShortLinkService, requestInfoServi
 //	@Success		200			{object}	shortenUrlResponse
 //	@Failure		400			{object}	genericErrorResponse	"slug already used"
 //	@Failure		500			{object}	genericErrorResponse
-//	@Router			/shorten	[post]
+//	@Router			/v1/shorten	[post]
 func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))
@@ -87,7 +87,7 @@ func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 //	@Failure		404		{object}	genericErrorResponse	"link not found"
 //	@Failure		404		{object}	genericErrorResponse	"link expired"
 //	@Failure		500		{object}	genericErrorResponse	"internal error"
-//	@Router			/{slug} [get]
+//	@Router			/v1/{slug} [get]
 func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		h.RequestInfoService.Create(r.Context(), getInfoFromRequest(r))

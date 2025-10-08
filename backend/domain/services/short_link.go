@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/ProRocketeers/url-shortener/domain"
@@ -18,7 +19,7 @@ import (
 
 type ShortLinkService struct {
 	Repository *storage.ShortLinkRepository
-	BaseUrl    string
+	BaseUrl    url.URL
 }
 
 func (s *ShortLinkService) Create(ctx context.Context, originalUrl string, slug *string, expiresAt *time.Time) (model.ShortLink, error) {
@@ -115,7 +116,7 @@ func (s *ShortLinkService) DeleteById(ctx context.Context, id uint) error {
 }
 
 func (s *ShortLinkService) GetShortUrl(link model.ShortLink) string {
-	return fmt.Sprintf("%s/%s", s.BaseUrl, link.Slug)
+	return fmt.Sprintf("%s/v1/%s", s.BaseUrl.String(), link.Slug)
 }
 
 func createSlug() string {
