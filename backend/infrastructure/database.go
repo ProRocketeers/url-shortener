@@ -10,7 +10,7 @@ import (
 
 func ConnectToDatabase(config Config) (*gorm.DB, error) {
 	connectionString := fmt.Sprintf(
-		"host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=UTC",
+		"host=%v user=%v password=%v dbname=%v port=%v TimeZone=UTC",
 		config.Database.Host,
 		config.Database.User,
 		config.Database.Password,
