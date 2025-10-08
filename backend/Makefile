@@ -35,8 +35,8 @@ create-migration:
 	fi
 	atlas migrate diff $(NAME) --env local
 
-.PHONY: migrate-dev
-migrate-dev:
+.PHONY: migrate
+migrate:
 	atlas migrate apply --env runtime --url "$(ATLAS_DATABASE_URL)"
 
 # `make update-model NAME=migration_name`
@@ -45,4 +45,4 @@ migrate-dev:
 		echo "Missing NAME parameter. Usage: make update-model NAME=migration_name"; \
 		exit 1; \
 	fi
-	make create-migration NAME=$(NAME) && make migrate-dev && make gen-schema
+	make create-migration NAME=$(NAME) && make migrate && make gen-schema

@@ -52,7 +52,7 @@ After updating the models, run following:
     ```
 2. Apply to your local DB 
     ```bash
-    make migrate-dev
+    make migrate
     ```
 3. Finally regenerate the query engine
     ```bash
