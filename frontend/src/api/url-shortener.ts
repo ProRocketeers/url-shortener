@@ -13,6 +13,7 @@ export type ShortenUrlResponse = {
 
 export type ShortLinkInfoResponse = {
 	originalUrl: string
+	shortUrl: string
 	clickCount: number
 	expiresAt?: string
 	createdAt?: string
