@@ -1,0 +1,46 @@
+{
+	"name": "frontend",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack",
+		"build": "next build --turbopack",
+		"start": "next start",
+		"lint": "eslint",
+		"lint:fix": "eslint --fix"
+	},
+	"dependencies": {
+		"@hookform/resolvers": "5.2.1",
+		"@radix-ui/react-label": "2.1.7",
+		"@radix-ui/react-slot": "1.2.3",
+		"@tanstack/react-query": "^5.90.2",
+		"axios": "^1.12.2",
+		"class-variance-authority": "0.7.1",
+		"clsx": "2.1.1",
+		"date-fns": "^4.1.0",
+		"lucide-react": "0.542.0",
+		"next": "15.5.2",
+		"next-intl": "^4.8.3",
+		"react": "19.1.0",
+		"react-day-picker": "^9.14.0",
+		"react-dom": "19.1.0",
+		"react-hook-form": "7.62.0",
+		"tailwind-merge": "3.3.1",
+		"tailwindcss-animate": "1.0.7",
+		"zod": "4.1.5"
+	},
+	"devDependencies": {
+		"@eslint/eslintrc": "^3",
+		"@tailwindcss/postcss": "^4.1.13",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"autoprefixer": "^10.4.21",
+		"eslint": "^9",
+		"eslint-config-next": "15.5.2",
+		"postcss": "^8.5.6",
+		"tailwindcss": "^4.1.13",
+		"typescript": "^5"
+	},
+	"packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
+}

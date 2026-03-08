@@ -1,0 +1,41 @@
+{
+	"common": {
+		"appTitle": "URL Shortener",
+		"appDescription": "Shorten your long URLs into simple links.",
+		"shorten": "Shorten URL",
+		"shortening": "Shortening...",
+		"error": "URL shortening failed. Check that the backend is running.",
+		"urlShortened": "URL successfully shortened!",
+		"copyLink": "Copy link",
+		"copied": "Copied!",
+		"viewDetails": "View details",
+		"stats": "Statistics",
+		"originalUrl": "Original URL",
+		"shortUrl": "Short URL",
+		"back": "Back"
+	},
+	"form": {
+		"urlLabel": "URL to shorten",
+		"urlPlaceholder": "https://example.com/very/long/url/that/needs/shortening",
+		"customSlugLabel": "Custom slug (optional)",
+		"customSlugPlaceholder": "my-link",
+		"expiresAtLabel": "Expiration date (optional)",
+		"expiresAtPlaceholder": "Select date",
+		"setExpiration": "Set expiration date",
+		"dateLabel": "Date",
+		"timeLabel": "Time"
+	},
+	"validation": {
+		"urlRequired": "URL is required",
+		"urlInvalid": "Invalid URL",
+		"slugInvalid": "Slug can only contain letters, numbers and dashes"
+	},
+	"detail": {
+		"title": "Short URL Details",
+		"clicks": "Clicks",
+		"createdAt": "Created",
+		"expiresAt": "Expires",
+		"noExpiration": "No expiration",
+		"statsPlaceholder": "Statistics and detailed information will be implemented here in the future."
+	}
+}

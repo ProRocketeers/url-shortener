@@ -1,0 +1,41 @@
+{
+	"common": {
+		"appTitle": "URL Zkracovač",
+		"appDescription": "Zkraťte své dlouhé URL do jednoduchých odkazů.",
+		"shorten": "Zkrátit URL",
+		"shortening": "Zkracuji...",
+		"error": "Zkracování URL selhalo. Zkontroluj, že backend běží.",
+		"urlShortened": "URL bylo úspěšně zkráceno!",
+		"copyLink": "Kopírovat odkaz",
+		"copied": "Zkopírováno!",
+		"viewDetails": "Zobrazit detail",
+		"stats": "Statistiky",
+		"originalUrl": "Původní URL",
+		"shortUrl": "Zkrácené URL",
+		"back": "Zpět"
+	},
+	"form": {
+		"urlLabel": "URL ke zkrácení",
+		"urlPlaceholder": "https://example.com/very/long/url/that/needs/shortening",
+		"customSlugLabel": "Vlastní zkratka (volitelné)",
+		"customSlugPlaceholder": "moje-zkratka",
+		"expiresAtLabel": "Datum expirace (volitelné)",
+		"expiresAtPlaceholder": "Vyberte datum",
+		"setExpiration": "Nastavit datum expirace",
+		"dateLabel": "Datum",
+		"timeLabel": "Čas"
+	},
+	"validation": {
+		"urlRequired": "URL je povinné",
+		"urlInvalid": "Neplatná URL",
+		"slugInvalid": "Zkratka může obsahovat pouze písmena, čísla a pomlčky"
+	},
+	"detail": {
+		"title": "Detail zkráceného URL",
+		"clicks": "Počet kliknutí",
+		"createdAt": "Vytvořeno",
+		"expiresAt": "Vyprší",
+		"noExpiration": "Bez expirace",
+		"statsPlaceholder": "Statistiky a detailní informace budou implementovány v budoucnu."
+	}
+}
