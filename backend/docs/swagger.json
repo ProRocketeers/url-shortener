@@ -838,6 +838,9 @@
             "properties": {
                 "shortUrl": {
                     "type": "string"
+                },
+                "slug": {
+                    "type": "string"
                 }
             }
         },

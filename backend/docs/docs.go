@@ -849,6 +849,9 @@ const docTemplate = `{
             "properties": {
                 "shortUrl": {
                     "type": "string"
+                },
+                "slug": {
+                    "type": "string"
                 }
             }
         },

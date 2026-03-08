@@ -157,6 +157,8 @@ definitions:
     properties:
       shortUrl:
         type: string
+      slug:
+        type: string
     type: object
   v1.updateShortLinkRequest:
     properties:

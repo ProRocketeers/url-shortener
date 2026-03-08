@@ -74,6 +74,7 @@ func (h *ApiHandler) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 
 	res := shortenUrlResponse{
 		ShortURL: h.ShortLinkService.GetShortUrl(link),
+		Slug:     link.Slug,
 	}
 	sendJsonBody(w, res)
 }

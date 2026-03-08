@@ -15,6 +15,7 @@ type shortenUrlRequest struct {
 
 type shortenUrlResponse struct {
 	ShortURL string `json:"shortUrl"`
+	Slug     string `json:"slug"`
 }
 
 type shortLinkInfoResponse struct {
