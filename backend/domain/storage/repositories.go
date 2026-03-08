@@ -59,6 +59,26 @@ func (r *ShortLinkRepository) DeleteById(ctx context.Context, id uint) (int64, e
 	return info.RowsAffected, info.Error
 }
 
+func (r *ShortLinkRepository) List(ctx context.Context) ([]model.ShortLink, int64, error) {
+	ret := []model.ShortLink{}
+	links, err := r.DB.WithContext(ctx).ShortLink.Order(r.DB.ShortLink.ID.Desc()).Find()
+
+	for _, link := range links {
+		ret = append(ret, *link)
+	}
+	return ret, int64(len(ret)), err
+}
+
+func (r *ShortLinkRepository) PaginatedList(ctx context.Context, offset, limit int) ([]model.ShortLink, int64, error) {
+	ret := []model.ShortLink{}
+	links, totalCount, err := r.DB.WithContext(ctx).ShortLink.Order(r.DB.ShortLink.ID.Desc()).FindByPage(offset, limit)
+
+	for _, link := range links {
+		ret = append(ret, *link)
+	}
+	return ret, totalCount, err
+}
+
 // ------------------------
 
 type RequestInfoRepository struct {

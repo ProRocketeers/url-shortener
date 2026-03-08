@@ -259,6 +259,55 @@ func (h *AdminApiHandler) DeleteShortLinkById(w http.ResponseWriter, r *http.Req
 
 // ShortenUrl godoc
 //
+//	@Summary		Lists short links
+//	@Description	Supports either combination (offset + limit) or (page size + page) or no pagination
+//	@Description	Either pair must have either both set, or both unset
+//	@Description	If both pairs are supplied, page size + page is used
+//	@Tags			admin,links
+//	@Accept			json
+//	@Produce		json
+//	@Param			size				query		integer	false	"size"
+//	@Param			page				query		integer	false	"page"
+//	@Param			offset				query		integer	false	"offset"
+//	@Param			limit				query		integer	false	"limit"
+//	@Success		200					{object}	listShortLinksResponse
+//	@Failure		400					{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		500					{object}	genericErrorResponse
+//	@Router			/v1/admin/link/list	[get]
+func (h *AdminApiHandler) ListShortLinks(w http.ResponseWriter, r *http.Request) {
+	queryValues := r.URL.Query()
+
+	sizeQ := queryValues.Get("size")
+	pageQ := queryValues.Get("page")
+	offsetQ := queryValues.Get("offset")
+	limitQ := queryValues.Get("limit")
+
+	offset, limit, err := resolveRequestInfoListParams(sizeQ, pageQ, offsetQ, limitQ)
+	if err != nil {
+		sendJsonError(w, fmt.Sprintf("input validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	links, pagination, err := h.ShortLinkService.ListShortLinks(r.Context(), offset, limit)
+	if err != nil {
+		sendJsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	sendJsonBody(w, listShortLinksResponse{
+		Data: func() []shortLinkDto {
+			ret := []shortLinkDto{}
+			for _, link := range links {
+				ret = append(ret, createShortLinkDto(link, h.ShortLinkService.GetShortUrl(link)))
+			}
+			return ret
+		}(),
+		Pagination: pagination,
+	})
+}
+
+// ShortenUrl godoc
+//
 //	@Summary		Finds a request info by ID or request ID
 //	@Description	If both params are supplied, ID is used and request ID is ignored
 //	@Tags			admin,info

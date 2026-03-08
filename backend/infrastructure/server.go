@@ -155,6 +155,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 			r.Route("/admin", func(r chi.Router) {
 				r.Route("/link", func(r chi.Router) {
 					r.Post("/", dependencies.adminApiHandler.CreateShortLink)
+					r.Get("/list", dependencies.adminApiHandler.ListShortLinks)
 					r.Get("/id/{id:\\d+}", dependencies.adminApiHandler.GetShortLinkById)
 					r.Put("/id/{id:\\d+}", dependencies.adminApiHandler.UpdateShortLinkById)
 					r.Delete("/id/{id:\\d+}", dependencies.adminApiHandler.DeleteShortLinkById)

@@ -21,24 +21,29 @@ type shortenUrlResponse struct {
 
 // same as for /shorten request, but separated
 type createShortLinkRequest struct {
-	OriginalURL string  `json:"originalUrl" validate:"required,http_url"`
-	Slug        *string `json:"slug"`
+	OriginalURL string  `json:"originalUrl" validate:"required,http_url" example:"https://example.com/very/long/url/that/needs/shortening"`
+	Slug        *string `json:"slug" example:"myl1nk"`
 	// needs to be RFC3339 with timezone (or UTC)
-	ExpiresAt *time.Time `json:"expiresAt"`
+	ExpiresAt *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
 }
 
 type updateShortLinkRequest struct {
 	OriginalURL *string `json:"originalUrl" validate:"omitnil,http_url"`
-	Slug        *string `json:"slug"`
+	Slug        *string `json:"slug" example:"myl1nk"`
 	// needs to be RFC3339 with timezone (or UTC)
-	ExpiresAt *time.Time `json:"expiresAt"`
+	ExpiresAt *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
 }
 type shortLinkDto struct {
-	ID          uint       `json:"id"`
-	OriginalURL string     `json:"originalUrl"`
-	ShortURL    string     `json:"shortUrl"`
-	Slug        *string    `json:"slug"`
-	ExpiresAt   *time.Time `json:"expiresAt"`
+	ID          uint       `json:"id" example:"1"`
+	OriginalURL string     `json:"originalUrl" example:"https://example.com/very/long/url/that/needs/shortening"`
+	ShortURL    string     `json:"shortUrl" example:"https://short.link/v1/myl1nk"`
+	Slug        *string    `json:"slug" example:"myl1nk"`
+	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
+}
+
+type listShortLinksResponse struct {
+	Data       []shortLinkDto         `json:"data"`
+	Pagination *dto.PaginationInfoDTO `json:"pagination"`
 }
 
 type requestInfoDto struct {

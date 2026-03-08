@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"net/url"
 	"time"
 
@@ -113,6 +114,62 @@ func (s *ShortLinkService) DeleteById(ctx context.Context, id uint) error {
 		return &domain.ShortLinkError{Code: domain.ErrorCodeLinkOther}
 	}
 	return nil
+}
+
+func (s *ShortLinkService) ListShortLinks(ctx context.Context, offset, limit *int) ([]model.ShortLink, *dto.PaginationInfoDTO, error) {
+	var (
+		links      []model.ShortLink
+		total      int64
+		err        error
+		pagination *dto.PaginationInfoDTO
+	)
+
+	if offset == nil {
+		links, _, err = s.Repository.List(ctx)
+		if err != nil {
+			log.Error().
+				Err(err).
+				Msg("[admin] listing short links other error")
+			return []model.ShortLink{}, nil, &domain.ShortLinkError{Code: domain.ErrorCodeLinkOther}
+		}
+	} else {
+		links, total, err = s.Repository.PaginatedList(ctx, *offset, *limit)
+		if err != nil {
+			log.Error().
+				Err(err).
+				Int("offset", *offset).
+				Int("limit", *limit).
+				Msg("[admin] listing short links other error")
+			return []model.ShortLink{}, nil, &domain.ShortLinkError{Code: domain.ErrorCodeLinkOther}
+		}
+
+		currentPage := (*offset / *limit) + 1
+		totalPages := int(math.Ceil(float64(total) / float64(*limit)))
+
+		pagination = &dto.PaginationInfoDTO{
+			TotalRecords: total,
+			TotalPages:   totalPages,
+			CurrentPage:  currentPage,
+			PreviousPage: func() *int {
+				if currentPage == 1 {
+					return nil
+				}
+				p := currentPage - 1
+				return &p
+			}(),
+			NextPage: func() *int {
+				if currentPage == totalPages {
+					return nil
+				}
+				p := currentPage + 1
+				return &p
+			}(),
+			Offset: *offset,
+			Limit:  *limit,
+		}
+	}
+
+	return links, pagination, nil
 }
 
 func (s *ShortLinkService) GetShortUrl(link model.ShortLink) string {

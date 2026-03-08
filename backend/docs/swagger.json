@@ -315,6 +315,68 @@
                 }
             }
         },
+        "/v1/admin/link/list": {
+            "get": {
+                "description": "Supports either combination (offset + limit) or (page size + page) or no pagination\nEither pair must have either both set, or both unset\nIf both pairs are supplied, page size + page is used",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "links"
+                ],
+                "summary": "Lists short links",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.listShortLinksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/link/slug/{slug}": {
             "get": {
                 "description": "Returns a shortened link",
@@ -513,13 +575,16 @@
             "properties": {
                 "expiresAt": {
                     "description": "needs to be RFC3339 with timezone (or UTC)",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2036-03-09T12:00:00Z"
                 },
                 "originalUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/very/long/url/that/needs/shortening"
                 },
                 "slug": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "myl1nk"
                 }
             }
         },
@@ -538,6 +603,20 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/v1.requestInfoDto"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto.PaginationInfoDTO"
+                }
+            }
+        },
+        "v1.listShortLinksResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/v1.shortLinkDto"
                     }
                 },
                 "pagination": {
@@ -597,19 +676,24 @@
             "type": "object",
             "properties": {
                 "expiresAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2036-03-09T12:00:00Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "originalUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/very/long/url/that/needs/shortening"
                 },
                 "shortUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://short.link/v1/myl1nk"
                 },
                 "slug": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "myl1nk"
                 }
             }
         },
@@ -644,13 +728,15 @@
             "properties": {
                 "expiresAt": {
                     "description": "needs to be RFC3339 with timezone (or UTC)",
-                    "type": "string"
+                    "type": "string",
+                    "example": "2036-03-09T12:00:00Z"
                 },
                 "originalUrl": {
                     "type": "string"
                 },
                 "slug": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "myl1nk"
                 }
             }
         }
