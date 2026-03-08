@@ -20,6 +20,7 @@ type shortenUrlResponse struct {
 
 type shortLinkInfoResponse struct {
 	OriginalURL string     `json:"originalUrl"`
+	ShortURL    string     `json:"shortUrl" example:"https://short.link/myl1nk"`
 	ClickCount  int64      `json:"clickCount"`
 	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
 	CreatedAt   time.Time  `json:"createdAt" example:"2026-03-09T12:00:00Z"`
@@ -45,7 +46,7 @@ type updateShortLinkRequest struct {
 type shortLinkDto struct {
 	ID          uint       `json:"id" example:"1"`
 	OriginalURL string     `json:"originalUrl" example:"https://example.com/very/long/url/that/needs/shortening"`
-	ShortURL    string     `json:"shortUrl" example:"https://short.link/v1/myl1nk"`
+	ShortURL    string     `json:"shortUrl" example:"https://short.link/myl1nk"`
 	Slug        *string    `json:"slug" example:"myl1nk"`
 	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
 	CreatedAt   time.Time  `json:"createdAt" example:"2026-03-09T12:00:00Z"`

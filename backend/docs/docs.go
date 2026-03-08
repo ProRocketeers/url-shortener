@@ -580,7 +580,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/{slug}": {
+        "/{slug}": {
             "get": {
                 "description": "Redirects the user to the original URL in the link",
                 "summary": "Redirect from short link",
@@ -811,7 +811,7 @@ const docTemplate = `{
                 },
                 "shortUrl": {
                     "type": "string",
-                    "example": "https://short.link/v1/myl1nk"
+                    "example": "https://short.link/myl1nk"
                 },
                 "slug": {
                     "type": "string",
@@ -839,6 +839,10 @@ const docTemplate = `{
                 },
                 "originalUrl": {
                     "type": "string"
+                },
+                "shortUrl": {
+                    "type": "string",
+                    "example": "https://short.link/myl1nk"
                 },
                 "updatedAt": {
                     "type": "string",

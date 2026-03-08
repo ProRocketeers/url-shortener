@@ -131,7 +131,7 @@ definitions:
         example: https://example.com/very/long/url/that/needs/shortening
         type: string
       shortUrl:
-        example: https://short.link/v1/myl1nk
+        example: https://short.link/myl1nk
         type: string
       slug:
         example: myl1nk
@@ -151,6 +151,9 @@ definitions:
         example: "2036-03-09T12:00:00Z"
         type: string
       originalUrl:
+        type: string
+      shortUrl:
+        example: https://short.link/myl1nk
         type: string
       updatedAt:
         example: "2026-03-10T12:00:00Z"
@@ -190,7 +193,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /v1/{slug}:
+  /{slug}:
     get:
       description: Redirects the user to the original URL in the link
       parameters:

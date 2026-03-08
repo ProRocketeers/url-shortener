@@ -173,7 +173,7 @@ func (s *ShortLinkService) ListShortLinks(ctx context.Context, offset, limit *in
 }
 
 func (s *ShortLinkService) GetShortUrl(link model.ShortLink) string {
-	return fmt.Sprintf("%s/v1/%s", s.BaseUrl.String(), link.Slug)
+	return fmt.Sprintf("%s/%s", s.BaseUrl.String(), link.Slug)
 }
 
 func createSlug() string {

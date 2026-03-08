@@ -64,9 +64,10 @@ func seedRequestInfoWithMethod(t *testing.T, repo *RequestInfoRepository, path s
 
 func TestRequestInfoRepository_ListBySlug(t *testing.T) {
 	repo := setupRequestInfoRepo(t)
-	seedRequestInfo(t, repo, "/v1/abc123", "req-1")
+	seedRequestInfo(t, repo, "/abc123", "req-1")
 	seedRequestInfo(t, repo, "/v1/xyz999", "req-2")
 	seedRequestInfo(t, repo, "/v1/abc123", "req-3")
+	seedRequestInfo(t, repo, "/v1/info/abc123", "req-4")
 
 	infos, total, err := repo.ListBySlug(context.Background(), "abc123")
 	if err != nil {
@@ -81,18 +82,20 @@ func TestRequestInfoRepository_ListBySlug(t *testing.T) {
 		t.Fatalf("expected 2 items, got %d", len(infos))
 	}
 
+	allowed := map[string]bool{"/abc123": true, "/v1/abc123": true}
 	for _, info := range infos {
-		if info.Path != "/v1/abc123" {
-			t.Fatalf("expected path /v1/abc123, got %s", info.Path)
+		if !allowed[info.Path] {
+			t.Fatalf("expected path /abc123 or /v1/abc123, got %s", info.Path)
 		}
 	}
 }
 
 func TestRequestInfoRepository_PaginatedListBySlug(t *testing.T) {
 	repo := setupRequestInfoRepo(t)
-	seedRequestInfo(t, repo, "/v1/slug-a", "req-1")
+	seedRequestInfo(t, repo, "/slug-a", "req-1")
 	seedRequestInfo(t, repo, "/v1/slug-a", "req-2")
 	seedRequestInfo(t, repo, "/v1/slug-b", "req-3")
+	seedRequestInfo(t, repo, "/v1/info/slug-a", "req-4")
 
 	infos, total, err := repo.PaginatedListBySlug(context.Background(), "slug-a", 1, 1)
 	if err != nil {
@@ -107,17 +110,18 @@ func TestRequestInfoRepository_PaginatedListBySlug(t *testing.T) {
 		t.Fatalf("expected 1 item for pagination, got %d", len(infos))
 	}
 
-	if infos[0].Path != "/v1/slug-a" {
-		t.Fatalf("expected path /v1/slug-a, got %s", infos[0].Path)
+	if infos[0].Path != "/v1/slug-a" && infos[0].Path != "/slug-a" {
+		t.Fatalf("expected path /slug-a or /v1/slug-a, got %s", infos[0].Path)
 	}
 }
 
 func TestRequestInfoRepository_CountBySlug(t *testing.T) {
 	repo := setupRequestInfoRepo(t)
-	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-1", "GET")
+	seedRequestInfoWithMethod(t, repo, "/slug-count", "req-1", "GET")
 	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-2", "GET")
 	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-3", "POST")
 	seedRequestInfoWithMethod(t, repo, "/v1/other", "req-4", "GET")
+	seedRequestInfoWithMethod(t, repo, "/v1/info/slug-count", "req-5", "GET")
 
 	count, err := repo.CountBySlug(context.Background(), "slug-count")
 	if err != nil {

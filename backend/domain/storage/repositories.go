@@ -119,8 +119,15 @@ func (r *RequestInfoRepository) PaginatedList(ctx context.Context, offset, limit
 
 func (r *RequestInfoRepository) ListBySlug(ctx context.Context, slug string) ([]model.RequestInfo, int64, error) {
 	ret := []model.RequestInfo{}
-	filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
-	infos, err := r.DB.WithContext(ctx).RequestInfo.Where(filter).Find()
+	pathV1Filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	pathRootFilter := r.DB.RequestInfo.Path.Like("%/" + slug)
+	infoPathExclusion := r.DB.RequestInfo.Path.NotLike("%/info/%")
+	adminPathExclusion := r.DB.RequestInfo.Path.NotLike("%/admin/%")
+
+	infos, err := r.DB.WithContext(ctx).RequestInfo.
+		Where(pathV1Filter, infoPathExclusion, adminPathExclusion).
+		Or(pathRootFilter, infoPathExclusion, adminPathExclusion).
+		Find()
 
 	for _, info := range infos {
 		ret = append(ret, *info)
@@ -130,8 +137,15 @@ func (r *RequestInfoRepository) ListBySlug(ctx context.Context, slug string) ([]
 
 func (r *RequestInfoRepository) PaginatedListBySlug(ctx context.Context, slug string, offset, limit int) ([]model.RequestInfo, int64, error) {
 	ret := []model.RequestInfo{}
-	filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
-	infos, totalCount, err := r.DB.WithContext(ctx).RequestInfo.Where(filter).FindByPage(offset, limit)
+	pathV1Filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	pathRootFilter := r.DB.RequestInfo.Path.Like("%/" + slug)
+	infoPathExclusion := r.DB.RequestInfo.Path.NotLike("%/info/%")
+	adminPathExclusion := r.DB.RequestInfo.Path.NotLike("%/admin/%")
+
+	infos, totalCount, err := r.DB.WithContext(ctx).RequestInfo.
+		Where(pathV1Filter, infoPathExclusion, adminPathExclusion).
+		Or(pathRootFilter, infoPathExclusion, adminPathExclusion).
+		FindByPage(offset, limit)
 
 	for _, info := range infos {
 		ret = append(ret, *info)
@@ -140,8 +154,14 @@ func (r *RequestInfoRepository) PaginatedListBySlug(ctx context.Context, slug st
 }
 
 func (r *RequestInfoRepository) CountBySlug(ctx context.Context, slug string) (int64, error) {
-	pathFilter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	pathV1Filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	pathRootFilter := r.DB.RequestInfo.Path.Like("%/" + slug)
+	infoPathExclusion := r.DB.RequestInfo.Path.NotLike("%/info/%")
+	adminPathExclusion := r.DB.RequestInfo.Path.NotLike("%/admin/%")
 	methodFilter := r.DB.RequestInfo.Method.Eq("GET")
 
-	return r.DB.WithContext(ctx).RequestInfo.Where(pathFilter, methodFilter).Count()
+	return r.DB.WithContext(ctx).RequestInfo.
+		Where(pathV1Filter, infoPathExclusion, adminPathExclusion, methodFilter).
+		Or(pathRootFilter, infoPathExclusion, adminPathExclusion, methodFilter).
+		Count()
 }
