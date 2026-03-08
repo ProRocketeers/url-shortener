@@ -793,6 +793,10 @@ const docTemplate = `{
         "v1.shortLinkDto": {
             "type": "object",
             "properties": {
+                "createdAt": {
+                    "type": "string",
+                    "example": "2026-03-09T12:00:00Z"
+                },
                 "expiresAt": {
                     "type": "string",
                     "example": "2036-03-09T12:00:00Z"
@@ -812,6 +816,10 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "myl1nk"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2026-03-10T12:00:00Z"
                 }
             }
         },
@@ -821,12 +829,20 @@ const docTemplate = `{
                 "clickCount": {
                     "type": "integer"
                 },
+                "createdAt": {
+                    "type": "string",
+                    "example": "2026-03-09T12:00:00Z"
+                },
                 "expiresAt": {
                     "type": "string",
                     "example": "2036-03-09T12:00:00Z"
                 },
                 "originalUrl": {
                     "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "example": "2026-03-10T12:00:00Z"
                 }
             }
         },

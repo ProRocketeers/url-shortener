@@ -158,5 +158,7 @@ func (h *ApiHandler) GetShortLinkInfoBySlug(w http.ResponseWriter, r *http.Reque
 		OriginalURL: link.OriginalURL,
 		ClickCount:  clickCount,
 		ExpiresAt:   link.ExpiresAt,
+		CreatedAt:   link.CreatedAt,
+		UpdatedAt:   link.UpdatedAt,
 	})
 }

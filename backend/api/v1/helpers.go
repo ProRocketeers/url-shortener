@@ -94,6 +94,8 @@ func createShortLinkDto(l model.ShortLink, shortUrl string) shortLinkDto {
 		Slug:        &l.Slug,
 		ShortURL:    shortUrl,
 		ExpiresAt:   l.ExpiresAt,
+		CreatedAt:   l.CreatedAt,
+		UpdatedAt:   l.UpdatedAt,
 	}
 }
 

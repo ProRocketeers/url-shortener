@@ -118,6 +118,9 @@ definitions:
     type: object
   v1.shortLinkDto:
     properties:
+      createdAt:
+        example: "2026-03-09T12:00:00Z"
+        type: string
       expiresAt:
         example: "2036-03-09T12:00:00Z"
         type: string
@@ -133,15 +136,24 @@ definitions:
       slug:
         example: myl1nk
         type: string
+      updatedAt:
+        example: "2026-03-10T12:00:00Z"
+        type: string
     type: object
   v1.shortLinkInfoResponse:
     properties:
       clickCount:
         type: integer
+      createdAt:
+        example: "2026-03-09T12:00:00Z"
+        type: string
       expiresAt:
         example: "2036-03-09T12:00:00Z"
         type: string
       originalUrl:
+        type: string
+      updatedAt:
+        example: "2026-03-10T12:00:00Z"
         type: string
     type: object
   v1.shortenUrlRequest:

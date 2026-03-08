@@ -22,6 +22,8 @@ type shortLinkInfoResponse struct {
 	OriginalURL string     `json:"originalUrl"`
 	ClickCount  int64      `json:"clickCount"`
 	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
+	CreatedAt   time.Time  `json:"createdAt" example:"2026-03-09T12:00:00Z"`
+	UpdatedAt   time.Time  `json:"updatedAt" example:"2026-03-10T12:00:00Z"`
 }
 
 // --------ADMIN----------
@@ -46,6 +48,8 @@ type shortLinkDto struct {
 	ShortURL    string     `json:"shortUrl" example:"https://short.link/v1/myl1nk"`
 	Slug        *string    `json:"slug" example:"myl1nk"`
 	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
+	CreatedAt   time.Time  `json:"createdAt" example:"2026-03-09T12:00:00Z"`
+	UpdatedAt   time.Time  `json:"updatedAt" example:"2026-03-10T12:00:00Z"`
 }
 
 type listShortLinksResponse struct {
