@@ -127,6 +127,63 @@ func (s *RequestInfoService) ListRequestInfos(ctx context.Context, offset, limit
 	return infos, pagination, nil
 }
 
+func (s *RequestInfoService) ListRequestInfosBySlug(ctx context.Context, slug string, offset, limit *int) ([]model.RequestInfo, *dto.PaginationInfoDTO, error) {
+	var (
+		infos      []model.RequestInfo
+		total      int64
+		err        error
+		pagination *dto.PaginationInfoDTO
+	)
+
+	if offset == nil {
+		infos, _, err = s.Repository.ListBySlug(ctx, slug)
+		if err != nil {
+			log.Error().
+				Err(err).
+				Str("slug", slug).
+				Msg("[admin] listing request info by slug other error")
+			return []model.RequestInfo{}, nil, &domain.RequestInfoError{Code: domain.ErrorCodeInfoOther}
+		}
+	} else {
+		infos, total, err = s.Repository.PaginatedListBySlug(ctx, slug, *offset, *limit)
+		if err != nil {
+			log.Error().
+				Err(err).
+				Str("slug", slug).
+				Int("offset", *offset).
+				Int("limit", *limit).
+				Msg("[admin] listing request info by slug other error")
+			return []model.RequestInfo{}, nil, &domain.RequestInfoError{Code: domain.ErrorCodeInfoOther}
+		}
+
+		currentPage := (*offset / *limit) + 1
+		totalPages := int(math.Ceil(float64(total) / float64(*limit)))
+
+		pagination = &dto.PaginationInfoDTO{
+			TotalRecords: total,
+			TotalPages:   totalPages,
+			CurrentPage:  currentPage,
+			PreviousPage: func() *int {
+				if currentPage == 1 {
+					return nil
+				}
+				p := currentPage - 1
+				return &p
+			}(),
+			NextPage: func() *int {
+				if currentPage == totalPages {
+					return nil
+				}
+				p := currentPage + 1
+				return &p
+			}(),
+			Offset: *offset,
+			Limit:  *limit,
+		}
+	}
+	return infos, pagination, nil
+}
+
 func jsonFromMap[T any](data map[string]T) (datatypes.JSON, error) {
 	bytes, err := json.Marshal(data)
 	if err != nil {

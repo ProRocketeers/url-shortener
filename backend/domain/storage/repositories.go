@@ -116,3 +116,25 @@ func (r *RequestInfoRepository) PaginatedList(ctx context.Context, offset, limit
 	}
 	return ret, totalCount, err
 }
+
+func (r *RequestInfoRepository) ListBySlug(ctx context.Context, slug string) ([]model.RequestInfo, int64, error) {
+	ret := []model.RequestInfo{}
+	filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	infos, err := r.DB.WithContext(ctx).RequestInfo.Where(filter).Find()
+
+	for _, info := range infos {
+		ret = append(ret, *info)
+	}
+	return ret, int64(len(ret)), err
+}
+
+func (r *RequestInfoRepository) PaginatedListBySlug(ctx context.Context, slug string, offset, limit int) ([]model.RequestInfo, int64, error) {
+	ret := []model.RequestInfo{}
+	filter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	infos, totalCount, err := r.DB.WithContext(ctx).RequestInfo.Where(filter).FindByPage(offset, limit)
+
+	for _, info := range infos {
+		ret = append(ret, *info)
+	}
+	return ret, totalCount, err
+}

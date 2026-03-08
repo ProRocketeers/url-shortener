@@ -130,6 +130,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/admin/info/list/{slug}": {
+            "get": {
+                "description": "Supports either combination (offset + limit) or (page size + page) or no pagination\nEither pair must have either both set, or both unset\nIf both pairs are supplied, page size + page is used",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "info"
+                ],
+                "summary": "Lists request infos for a specific slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.listRequestInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request parameters",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/admin/link": {
             "post": {
                 "description": "Returns a shortened link for the given URL",

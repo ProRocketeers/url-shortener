@@ -408,3 +408,55 @@ func (h *AdminApiHandler) ListRequestInfos(w http.ResponseWriter, r *http.Reques
 		Pagination: pagination,
 	})
 }
+
+// ShortenUrl godoc
+//
+//	@Summary		Lists request infos for a specific slug
+//	@Description	Supports either combination (offset + limit) or (page size + page) or no pagination
+//	@Description	Either pair must have either both set, or both unset
+//	@Description	If both pairs are supplied, page size + page is used
+//	@Tags			admin,info
+//	@Accept			json
+//	@Produce		json
+//	@Param			slug						path		string	true	"slug"
+//	@Param			size						query		integer	false	"size"
+//	@Param			page						query		integer	false	"page"
+//	@Param			offset						query		integer	false	"offset"
+//	@Param			limit						query		integer	false	"limit"
+//	@Success		200							{object}	listRequestInfoResponse
+//	@Failure		400							{object}	genericErrorResponse	"invalid request parameters"
+//	@Failure		500							{object}	genericErrorResponse
+//	@Router			/v1/admin/info/list/{slug}	[get]
+func (h *AdminApiHandler) ListRequestInfosBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+	queryValues := r.URL.Query()
+
+	sizeQ := queryValues.Get("size")
+	pageQ := queryValues.Get("page")
+	offsetQ := queryValues.Get("offset")
+	limitQ := queryValues.Get("limit")
+
+	offset, limit, err := resolveRequestInfoListParams(sizeQ, pageQ, offsetQ, limitQ)
+
+	if err != nil {
+		sendJsonError(w, fmt.Sprintf("input validation error: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
+	infos, pagination, err := h.RequestInfoService.ListRequestInfosBySlug(r.Context(), slug, offset, limit)
+
+	if err != nil {
+		sendJsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	sendJsonBody(w, listRequestInfoResponse{
+		Data: func() []requestInfoDto {
+			ret := []requestInfoDto{}
+			for _, info := range infos {
+				ret = append(ret, createRequestInfoDto(info))
+			}
+			return ret
+		}(),
+		Pagination: pagination,
+	})
+}

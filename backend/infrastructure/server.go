@@ -180,6 +180,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 				r.Route("/info", func(r chi.Router) {
 					r.Get("/", dependencies.adminApiHandler.FindSingleRequestInfo)
 					r.Get("/list", dependencies.adminApiHandler.ListRequestInfos)
+					r.Get("/list/{slug:[a-zA-Z0-9]+}", dependencies.adminApiHandler.ListRequestInfosBySlug)
 				})
 			})
 		})

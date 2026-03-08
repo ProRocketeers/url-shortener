@@ -266,6 +266,55 @@ paths:
       tags:
       - admin
       - info
+  /v1/admin/info/list/{slug}:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Supports either combination (offset + limit) or (page size + page) or no pagination
+        Either pair must have either both set, or both unset
+        If both pairs are supplied, page size + page is used
+      parameters:
+      - description: slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      - description: size
+        in: query
+        name: size
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.listRequestInfoResponse'
+        "400":
+          description: invalid request parameters
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Lists request infos for a specific slug
+      tags:
+      - admin
+      - info
   /v1/admin/link:
     post:
       consumes:
