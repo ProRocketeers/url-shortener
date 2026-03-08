@@ -138,6 +138,9 @@ definitions:
     properties:
       clickCount:
         type: integer
+      expiresAt:
+        example: "2036-03-09T12:00:00Z"
+        type: string
       originalUrl:
         type: string
     type: object

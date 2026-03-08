@@ -157,5 +157,6 @@ func (h *ApiHandler) GetShortLinkInfoBySlug(w http.ResponseWriter, r *http.Reque
 	sendJsonBody(w, shortLinkInfoResponse{
 		OriginalURL: link.OriginalURL,
 		ClickCount:  clickCount,
+		ExpiresAt:   link.ExpiresAt,
 	})
 }

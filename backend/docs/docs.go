@@ -821,6 +821,10 @@ const docTemplate = `{
                 "clickCount": {
                     "type": "integer"
                 },
+                "expiresAt": {
+                    "type": "string",
+                    "example": "2036-03-09T12:00:00Z"
+                },
                 "originalUrl": {
                     "type": "string"
                 }

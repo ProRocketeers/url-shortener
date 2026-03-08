@@ -19,8 +19,9 @@ type shortenUrlResponse struct {
 }
 
 type shortLinkInfoResponse struct {
-	OriginalURL string `json:"originalUrl"`
-	ClickCount  int64  `json:"clickCount"`
+	OriginalURL string     `json:"originalUrl"`
+	ClickCount  int64      `json:"clickCount"`
+	ExpiresAt   *time.Time `json:"expiresAt" example:"2036-03-09T12:00:00Z"`
 }
 
 // --------ADMIN----------
