@@ -1,10 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/reusable/Button"
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/routing'
-import { ArrowLeft, Link as LinkIcon, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Link as LinkIcon, ExternalLink, Copy, Check } from 'lucide-react'
 import { useShortLinkInfoBySlug } from "@/hooks/api/url-shortener"
 
 type DetailPageProps = {
@@ -16,7 +17,14 @@ export function DetailPage({ slug }: DetailPageProps) {
 	const locale = useLocale()
 	const t = useTranslations('common')
 	const tDetail = useTranslations('detail')
+	const [copiedField, setCopiedField] = useState<"original" | "short" | null>(null)
 	const { data, isLoading, isError } = useShortLinkInfoBySlug(slug)
+
+	const handleCopy = async (value: string, field: "original" | "short") => {
+		await navigator.clipboard.writeText(value)
+		setCopiedField(field)
+		setTimeout(() => setCopiedField(null), 1500)
+	}
 
 	if (isLoading) {
 		return (
@@ -104,6 +112,15 @@ export function DetailPage({ slug }: DetailPageProps) {
 							<div className="flex-1 border border-slate-200 rounded-md px-3 py-2 bg-slate-50">
 								<p className="text-sm text-slate-600 truncate">{data.originalUrl}</p>
 							</div>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="border-slate-200"
+								onClick={() => handleCopy(data.originalUrl, "original")}
+							>
+								{copiedField === "original" ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+							</Button>
 							<a href={data.originalUrl} target="_blank" rel="noopener noreferrer">
 								<Button variant="outline" size="icon" className="border-slate-200">
 									<ExternalLink className="h-4 w-4" />
@@ -119,6 +136,15 @@ export function DetailPage({ slug }: DetailPageProps) {
 							<div className="flex-1 border border-slate-200 rounded-md px-3 py-2 bg-slate-50">
 								<p className="text-sm font-mono text-slate-600">{data.shortUrl}</p>
 							</div>
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="border-slate-200"
+								onClick={() => handleCopy(data.shortUrl, "short")}
+							>
+								{copiedField === "short" ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+							</Button>
 							<a href={data.shortUrl} target="_blank" rel="noopener noreferrer">
 								<Button variant="outline" size="icon" className="border-slate-200">
 									<ExternalLink className="h-4 w-4" />
