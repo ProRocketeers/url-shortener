@@ -138,3 +138,10 @@ func (r *RequestInfoRepository) PaginatedListBySlug(ctx context.Context, slug st
 	}
 	return ret, totalCount, err
 }
+
+func (r *RequestInfoRepository) CountBySlug(ctx context.Context, slug string) (int64, error) {
+	pathFilter := r.DB.RequestInfo.Path.Like("%/v1/" + slug)
+	methodFilter := r.DB.RequestInfo.Method.Eq("GET")
+
+	return r.DB.WithContext(ctx).RequestInfo.Where(pathFilter, methodFilter).Count()
+}

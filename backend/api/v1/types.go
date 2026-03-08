@@ -17,6 +17,11 @@ type shortenUrlResponse struct {
 	ShortURL string `json:"shortUrl"`
 }
 
+type shortLinkInfoResponse struct {
+	OriginalURL string `json:"originalUrl"`
+	ClickCount  int64  `json:"clickCount"`
+}
+
 // --------ADMIN----------
 
 // same as for /shorten request, but separated

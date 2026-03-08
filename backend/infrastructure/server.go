@@ -166,6 +166,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 
 		r.Route("/v1", func(r chi.Router) {
 			r.Post("/shorten", dependencies.apiHandler.ShortenUrl)
+			r.Get("/info/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.GetShortLinkInfoBySlug)
 			r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
 
 			r.Route("/admin", func(r chi.Router) {

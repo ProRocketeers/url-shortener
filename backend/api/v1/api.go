@@ -115,3 +115,46 @@ func (h *ApiHandler) RedirectSlug(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, link.OriginalURL, http.StatusTemporaryRedirect)
 }
+
+// GetShortLinkInfoBySlug godoc
+//
+//	@Summary		Get short link info by slug
+//	@Description	Returns basic information about the short link including original URL and click count
+//	@Produce		json
+//	@Param			slug	path		string	true	"Slug"
+//	@Success		200		{object}	shortLinkInfoResponse
+//	@Failure		404		{object}	genericErrorResponse	"link not found"
+//	@Failure		500		{object}	genericErrorResponse	"internal error"
+//	@Router			/v1/info/{slug} [get]
+func (h *ApiHandler) GetShortLinkInfoBySlug(w http.ResponseWriter, r *http.Request) {
+	slug := chi.URLParam(r, "slug")
+
+	link, err := h.ShortLinkService.FindBySlug(r.Context(), slug, false)
+	if err != nil {
+		var e *domain.ShortLinkError
+		if errors.As(err, &e) {
+			switch e.Code {
+			case domain.ErrorCodeLinkNotFound:
+				sendJsonError(w, "link not found", http.StatusNotFound)
+			case domain.ErrorCodeLinkOther:
+				sendJsonError(w, "internal error", http.StatusInternalServerError)
+			default:
+				sendJsonError(w, "internal error", http.StatusInternalServerError)
+			}
+		} else {
+			sendJsonError(w, "internal error", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	clickCount, err := h.RequestInfoService.CountBySlug(r.Context(), slug)
+	if err != nil {
+		sendJsonError(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	sendJsonBody(w, shortLinkInfoResponse{
+		OriginalURL: link.OriginalURL,
+		ClickCount:  clickCount,
+	})
+}

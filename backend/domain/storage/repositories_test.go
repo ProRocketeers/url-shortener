@@ -46,6 +46,22 @@ func seedRequestInfo(t *testing.T, repo *RequestInfoRepository, path string, req
 	}
 }
 
+func seedRequestInfoWithMethod(t *testing.T, repo *RequestInfoRepository, path string, requestID string, method string) {
+	t.Helper()
+
+	now := time.Now().UTC()
+	info := &model.RequestInfo{
+		RequestId: requestID,
+		Timestamp: now,
+		Path:      path,
+		Method:    method,
+	}
+
+	if err := repo.Create(context.Background(), info); err != nil {
+		t.Fatalf("failed to seed request info: %v", err)
+	}
+}
+
 func TestRequestInfoRepository_ListBySlug(t *testing.T) {
 	repo := setupRequestInfoRepo(t)
 	seedRequestInfo(t, repo, "/v1/abc123", "req-1")
@@ -93,5 +109,22 @@ func TestRequestInfoRepository_PaginatedListBySlug(t *testing.T) {
 
 	if infos[0].Path != "/v1/slug-a" {
 		t.Fatalf("expected path /v1/slug-a, got %s", infos[0].Path)
+	}
+}
+
+func TestRequestInfoRepository_CountBySlug(t *testing.T) {
+	repo := setupRequestInfoRepo(t)
+	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-1", "GET")
+	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-2", "GET")
+	seedRequestInfoWithMethod(t, repo, "/v1/slug-count", "req-3", "POST")
+	seedRequestInfoWithMethod(t, repo, "/v1/other", "req-4", "GET")
+
+	count, err := repo.CountBySlug(context.Background(), "slug-count")
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	if count != 2 {
+		t.Fatalf("expected click count 2, got %d", count)
 	}
 }

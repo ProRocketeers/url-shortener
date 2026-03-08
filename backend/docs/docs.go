@@ -499,6 +499,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/info/{slug}": {
+            "get": {
+                "description": "Returns basic information about the short link including original URL and click count",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get short link info by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Slug",
+                        "name": "slug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.shortLinkInfoResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "link not found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "internal error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.genericErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/shorten": {
             "post": {
                 "description": "Returns a shortened link for the given URL",
@@ -774,6 +812,17 @@ const docTemplate = `{
                 "slug": {
                     "type": "string",
                     "example": "myl1nk"
+                }
+            }
+        },
+        "v1.shortLinkInfoResponse": {
+            "type": "object",
+            "properties": {
+                "clickCount": {
+                    "type": "integer"
+                },
+                "originalUrl": {
+                    "type": "string"
                 }
             }
         },

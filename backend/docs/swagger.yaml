@@ -134,6 +134,13 @@ definitions:
         example: myl1nk
         type: string
     type: object
+  v1.shortLinkInfoResponse:
+    properties:
+      clickCount:
+        type: integer
+      originalUrl:
+        type: string
+    type: object
   v1.shortenUrlRequest:
     properties:
       expiresAt:
@@ -518,6 +525,32 @@ paths:
       tags:
       - admin
       - links
+  /v1/info/{slug}:
+    get:
+      description: Returns basic information about the short link including original
+        URL and click count
+      parameters:
+      - description: Slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.shortLinkInfoResponse'
+        "404":
+          description: link not found
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+        "500":
+          description: internal error
+          schema:
+            $ref: '#/definitions/v1.genericErrorResponse'
+      summary: Get short link info by slug
   /v1/shorten:
     post:
       consumes:

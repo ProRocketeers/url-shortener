@@ -184,6 +184,19 @@ func (s *RequestInfoService) ListRequestInfosBySlug(ctx context.Context, slug st
 	return infos, pagination, nil
 }
 
+func (s *RequestInfoService) CountBySlug(ctx context.Context, slug string) (int64, error) {
+	count, err := s.Repository.CountBySlug(ctx, slug)
+	if err != nil {
+		log.Error().
+			Err(err).
+			Str("slug", slug).
+			Msg("counting request info by slug error")
+		return 0, &domain.RequestInfoError{Code: domain.ErrorCodeInfoOther}
+	}
+
+	return count, nil
+}
+
 func jsonFromMap[T any](data map[string]T) (datatypes.JSON, error) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
