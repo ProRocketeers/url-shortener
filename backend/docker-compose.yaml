@@ -1,9 +1,7 @@
-version: '3.1'
-
+name: url-shortener
 services:
-  postgresql:
+  postgres:
     image: postgres:17-alpine
-    container_name: url-shortener-postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -13,8 +11,23 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgresql_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./init_local_db.sql:/docker-entrypoint-initdb.d/init_local_db.sql
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'True'
+    ports:
+      - '5050:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
 volumes:
-  postgresql_data:
+  postgres_data:
+  pgadmin_data:
