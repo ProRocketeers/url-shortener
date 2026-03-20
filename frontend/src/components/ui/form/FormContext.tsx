@@ -15,7 +15,7 @@ type Props<T extends z.ZodObject<z.ZodRawShape>> = {
 	schema: T;
 	defaultValues?: DefaultValues<z.input<T>>;
 	onSubmit: SubmitHandler<z.output<T>>;
-} & UseFormProps<z.input<T>>;
+} & UseFormProps<z.input<T>, unknown, z.output<T>>;
 
 export const FormContext = <T extends z.ZodObject<z.ZodRawShape>>({
 	children,

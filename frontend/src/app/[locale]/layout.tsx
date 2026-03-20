@@ -8,6 +8,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { Suspense } from "react"
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -57,7 +58,9 @@ export default async function RootLayout({
 						<div className="min-h-screen w-full px-4 py-10">
 							<div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-8">
 								{children}
-								<LanguageSwitcher />
+								<Suspense fallback={null}>
+									<LanguageSwitcher />
+								</Suspense>
 							</div>
 						</div>
 					</QueryProvider>
