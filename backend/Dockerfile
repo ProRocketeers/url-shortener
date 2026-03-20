@@ -26,5 +26,16 @@ WORKDIR /app
 COPY --from=builder /app/bin/server .
 COPY --from=builder /app/atlas.hcl .
 COPY --from=builder /app/domain/migrations/ ./domain/migrations/
+COPY ./docker/entrypoint.sh ./docker/entrypoint.sh
 
-ENTRYPOINT ["./server"]
+RUN addgroup -S app && adduser -S app -G app \
+	&& chmod +x /app/docker/entrypoint.sh \
+	&& chown -R app:app /app
+
+USER app
+
+ENV DB_RUN_MIGRATIONS=true
+ENV DB_MIGRATION_MAX_ATTEMPTS=30
+ENV DB_MIGRATION_RETRY_DELAY_SECONDS=2
+
+ENTRYPOINT ["/app/docker/entrypoint.sh"]
