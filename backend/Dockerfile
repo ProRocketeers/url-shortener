@@ -18,6 +18,8 @@ RUN make build
 # -------------------
 FROM alpine:3.22.1 AS runtime
 
+ARG PORT=8080
+
 RUN apk update && apk add --no-cache ca-certificates curl 
 RUN curl -sSf https://atlasgo.sh | sh -s -- --yes
 
@@ -34,8 +36,10 @@ RUN addgroup -S app && adduser -S app -G app \
 
 USER app
 
+ENV PORT=${PORT}
 ENV DB_RUN_MIGRATIONS=true
 ENV DB_MIGRATION_MAX_ATTEMPTS=30
 ENV DB_MIGRATION_RETRY_DELAY_SECONDS=2
+EXPOSE ${PORT}
 
 ENTRYPOINT ["/app/docker/entrypoint.sh"]

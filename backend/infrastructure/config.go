@@ -138,7 +138,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 
 func setEnvDefaults() {
 	viper.SetDefault("LOG_LEVEL", "info")
-	viper.SetDefault("PORT", 3000)
+	viper.SetDefault("PORT", 8080)
 	viper.SetDefault("DB_LOG_LEVEL", "info")
 	viper.SetDefault("DB_SLOW_QUERY_THRESHOLD", "250ms")
 }
