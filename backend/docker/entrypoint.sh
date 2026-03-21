@@ -12,7 +12,7 @@ if [ -z "${ATLAS_DATABASE_URL:-}" ]; then
   db_port="${DB_PORT:-5432}"
   db_user="${DB_USER:-postgres}"
   db_password="${DB_PASSWORD:-postgres}"
-  db_name="${DB_DATABASE:-${DB_NAME:-postgres}}"
+  db_name="${DB_NAME:-postgres}"
   db_sslmode="${DB_SSL_MODE:-require}"
   db_timezone="${DB_TIMEZONE:-UTC}"
 

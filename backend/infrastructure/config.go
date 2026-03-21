@@ -115,7 +115,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 			Host:               viper.GetString("DB_HOST"),
 			User:               viper.GetString("DB_USER"),
 			Password:           viper.GetString("DB_PASSWORD"),
-			Database:           viper.GetString("DB_DATABASE"),
+			Database:           viper.GetString("DB_NAME"),
 			Port:               viper.GetInt("DB_PORT"),
 			LogLevel:           parseDbLogLevel(),
 			SlowQueryThreshold: viper.GetDuration("DB_SLOW_QUERY_THRESHOLD"),
