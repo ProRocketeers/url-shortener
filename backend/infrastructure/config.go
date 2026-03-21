@@ -122,7 +122,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 		},
 		Domain: domainConfig{
 			BaseUrl:                    *baseUrl,
-			ExpiredLinkCleanupInterval: viper.GetDuration("EXPIRED_LINK_CLEANUP_INTERVAL"),
+			ExpiredLinkCleanupInterval: cleanupInterval,
 		},
 	}
 
@@ -143,6 +143,7 @@ func setEnvDefaults() {
 	viper.SetDefault("PORT", 8080)
 	viper.SetDefault("DB_LOG_LEVEL", "info")
 	viper.SetDefault("DB_SLOW_QUERY_THRESHOLD", "250ms")
+	viper.SetDefault("EXPIRED_LINK_CLEANUP_INTERVAL", "2m")
 }
 
 func parseLogLevel() zerolog.Level {

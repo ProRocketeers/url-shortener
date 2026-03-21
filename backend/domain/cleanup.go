@@ -16,6 +16,11 @@ type CleanupTask struct {
 }
 
 func (t *CleanupTask) Run() {
+	if t.Interval <= 0 {
+		log.Error().Dur("interval", t.Interval).Msg("skipping expired link cleanup: interval must be greater than 0")
+		return
+	}
+
 	ticker := time.NewTicker(t.Interval)
 	go func() {
 		defer ticker.Stop()
