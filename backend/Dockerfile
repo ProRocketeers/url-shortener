@@ -18,7 +18,13 @@ RUN make build
 # -------------------
 FROM alpine:3.22.1 AS runtime
 
-ARG PORT=8080
+ARG PORT=3000
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_USER
+ARG DB_PASSWORD
+ARG DB_NAME
+ARG DB_SSL_MODE=require
 
 RUN apk update && apk add --no-cache ca-certificates curl 
 RUN curl -sSf https://atlasgo.sh | sh -s -- --yes
@@ -37,6 +43,12 @@ RUN addgroup -S app && adduser -S app -G app \
 USER app
 
 ENV PORT=${PORT}
+ENV DB_HOST=${DB_HOST}
+ENV DB_PORT=${DB_PORT}
+ENV DB_USER=${DB_USER}
+ENV DB_PASSWORD=${DB_PASSWORD}
+ENV DB_NAME=${DB_NAME}
+ENV DB_SSL_MODE=${DB_SSL_MODE}
 ENV DB_RUN_MIGRATIONS=true
 ENV DB_MIGRATION_MAX_ATTEMPTS=30
 ENV DB_MIGRATION_RETRY_DELAY_SECONDS=2

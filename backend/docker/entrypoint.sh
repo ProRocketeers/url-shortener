@@ -11,7 +11,7 @@ if [ -z "${ATLAS_DATABASE_URL:-}" ]; then
   db_user="${DB_USER:-postgres}"
   db_password="${DB_PASSWORD:-postgres}"
   db_name="${DB_DATABASE:-postgres}"
-  db_sslmode="${DB_SSL_MODE:-disable}"
+  db_sslmode="${DB_SSL_MODE:-require}"
   db_timezone="${DB_TIMEZONE:-UTC}"
 
   export ATLAS_DATABASE_URL="postgresql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}?sslmode=${db_sslmode}&timezone=${db_timezone}"
