@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -87,7 +88,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 
 	zerolog.SetGlobalLevel(parseLogLevel())
 
-	environmentStr := viper.GetString("ENVIRONMENT")
+	environmentStr := strings.ToLower(strings.TrimSpace(viper.GetString("ENVIRONMENT")))
 	environment, ok := environmentMap[environmentStr]
 	if !ok {
 		return Config{}, fmt.Errorf("invalid environment %s", environmentStr)
@@ -137,6 +138,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 }
 
 func setEnvDefaults() {
+	viper.SetDefault("ENVIRONMENT", string(ProductionEnvironment))
 	viper.SetDefault("LOG_LEVEL", "info")
 	viper.SetDefault("PORT", 8080)
 	viper.SetDefault("DB_LOG_LEVEL", "info")
