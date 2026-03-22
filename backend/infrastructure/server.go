@@ -161,7 +161,7 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("hello"))
+			w.Write([]byte("ok"))
 		})
 
 		r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
