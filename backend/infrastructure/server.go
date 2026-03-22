@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"os"
 	"os/signal"
 	"path"
@@ -147,21 +146,16 @@ func createRouter(dependencies *dependencies, config Config) *chi.Mux {
 		}(),
 	})
 
+	swaggerPath := path.Join("", "swagger", "index.html")
+
 	r.Route(basePath, func(r chi.Router) {
-		r.Get("/swagger*", httpSwagger.WrapHandler)
-		r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
-			// properly resolve the redirect with respect to the base path
-			redirectUrl := config.Domain.BaseUrl.ResolveReference(
-				&url.URL{
-					Path: path.Join(basePath, "swagger", "index.html"),
-				},
-			).String()
-			http.Redirect(w, r, redirectUrl, http.StatusMovedPermanently)
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, swaggerPath, http.StatusTemporaryRedirect)
 		})
 
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("ok"))
+		r.Get("/swagger*", httpSwagger.WrapHandler)
+		r.Get("/swagger", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, swaggerPath, http.StatusTemporaryRedirect)
 		})
 
 		r.Get("/{slug:[a-zA-Z0-9]+}", dependencies.apiHandler.RedirectSlug)
@@ -226,6 +220,7 @@ func RunServerGracefully(config Config) error {
 		log.Info().Msgf("Starting background job - cleaning up expired links - every %v", cleanupTask.Interval.String())
 		cleanupTask.Run()
 
+		log.Printf("🚀 Starting server at %s", config.Domain.BaseUrl.String())
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			// encountered an error, gracefully shutdown
 			serverError <- err
