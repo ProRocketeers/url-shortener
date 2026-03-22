@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/reusable/Button"
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/routing'
-import { ArrowLeft, Link as LinkIcon, ExternalLink, Copy, Check } from 'lucide-react'
+import { ArrowLeft, Link as LinkIcon, ExternalLink, Copy, Check, CircleAlert } from 'lucide-react'
 import { useShortLinkInfoBySlug } from "@/hooks/api/url-shortener"
 
 type DetailPageProps = {
@@ -29,19 +29,27 @@ export function DetailPage({ slug }: DetailPageProps) {
 	if (isLoading) {
 		return (
 			<div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-				<p className="text-slate-600">Loading...</p>
+				<p className="text-slate-600 text-center">Loading...</p>
 			</div>
 		)
 	}
 
 	if (isError || !data) {
 		return (
-			<div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-				<div className="flex flex-col items-center justify-center gap-4">
-					<p className="text-red-600">{t('error')}</p>
+			<div className="w-full max-w-2xl rounded-2xl border border-red-200 bg-white p-6 shadow-sm sm:p-8">
+				<div className="flex flex-col items-center justify-center gap-5 text-center">
+					<div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-600">
+						<CircleAlert className="h-7 w-7" />
+					</div>
+					<div className="space-y-2">
+						<h1 className="text-2xl font-semibold text-slate-900">{tDetail('loadErrorTitle')}</h1>
+						<p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+							{tDetail('loadErrorDescription')}
+						</p>
+					</div>
 					<Button variant="outline" className="border-slate-200" onClick={() => router.push('/')}>
 						<ArrowLeft className="h-4 w-4" />
-						{t('back') || 'Back'}
+						{tDetail('backToForm')}
 					</Button>
 				</div>
 			</div>

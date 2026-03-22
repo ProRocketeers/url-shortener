@@ -36,6 +36,9 @@
 		"createdAt": "Created",
 		"expiresAt": "Expires",
 		"noExpiration": "No expiration",
+		"loadErrorTitle": "Short URL details could not be loaded",
+		"loadErrorDescription": "The short URL data is not available right now. The link may have expired, may not exist, or the server could not be reached. Return to the form and try creating a new short link.",
+		"backToForm": "Back to form",
 		"statsPlaceholder": "Statistics and detailed information will be implemented here in the future."
 	}
 }

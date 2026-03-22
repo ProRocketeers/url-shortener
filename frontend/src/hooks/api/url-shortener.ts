@@ -12,6 +12,6 @@ export const useShortLinkInfoBySlug = (slug: string) => {
 		queryKey: ["short-link-info", slug],
 		queryFn: () => getShortLinkInfoBySlug(slug),
 		enabled: !!slug,
-		refetchInterval: 3000,
+		refetchInterval: (query) => query.state.data ? 3000 : false,
 	})
 }

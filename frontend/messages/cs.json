@@ -36,6 +36,9 @@
 		"createdAt": "Vytvořeno",
 		"expiresAt": "Vyprší",
 		"noExpiration": "Bez expirace",
+		"loadErrorTitle": "Detail zkrácené URL se nepodařilo načíst",
+		"loadErrorDescription": "Data o zkrácené URL teď nejsou dostupná. Odkaz mohl vypršet, neexistuje, nebo se nepodařilo spojit se serverem. Vraťte se na formulář a zkuste vytvořit nový krátký odkaz.",
+		"backToForm": "Zpět na formulář",
 		"statsPlaceholder": "Statistiky a detailní informace budou implementovány v budoucnu."
 	}
 }
