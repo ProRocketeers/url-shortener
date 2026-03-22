@@ -122,7 +122,7 @@ func ParseServerConfig(version, commitHash, buildTime string) (Config, error) {
 		},
 		Domain: domainConfig{
 			BaseUrl:                    *baseUrl,
-			ExpiredLinkCleanupInterval: cleanupInterval,
+			ExpiredLinkCleanupInterval: viper.GetDuration("EXPIRED_LINK_CLEANUP_INTERVAL"),
 		},
 	}
 
